@@ -1,0 +1,5 @@
+node_modules
+.vscode
+prod/
+.idea
+*.js

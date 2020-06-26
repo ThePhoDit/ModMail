@@ -4,7 +4,8 @@
   "description": "ModMail Bot for Discord.",
   "main": "prod/index.js",
   "dependencies": {
-    "eris": "^0.13.3"
+    "eris": "^0.13.3",
+    "simple-json-db": "^1.2.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.3.0",

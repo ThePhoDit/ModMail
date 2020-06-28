@@ -1,15 +1,17 @@
-import { Message, Member, TextChannel } from 'eris';
+import { Message, Member, TextChannel, CategoryChannel } from 'eris';
 
 interface CommandData {
 	msg: Message;
 	member: Member;
 	args: string[];
 	channel: TextChannel;
+	category: CategoryChannel;
 }
 
 interface CommandOptions {
 	aliases: string[];
-	level: 'MANAGER' | 'HELPER'
+	level: 'MANAGER' | 'HELPER';
+	threadOnly: boolean;
 }
 
 export {

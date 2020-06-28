@@ -1,3 +1,4 @@
+// @ts-ignore
 import config from '../../../config.json';
 import {  Client } from 'eris';
 import { EventEmitter } from 'events';

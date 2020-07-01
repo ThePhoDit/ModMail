@@ -1,6 +1,5 @@
 import Caller from '../structures/Caller';
 import {
-	Channel,
 	Message,
 	MessageContent,
 	MessageFile,
@@ -8,7 +7,8 @@ import {
 	User,
 	Constants,
 	CategoryChannel,
-	VoiceChannel, CreateChannelOptions
+	VoiceChannel,
+	CreateChannelOptions
 } from 'eris';
 
 class DiscordUtils {

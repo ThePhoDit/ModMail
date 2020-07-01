@@ -61,7 +61,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 
 			const guildEmbed = new MessageEmbed()
 				.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
-				.setColor(COLORS.GREEN)
+				.setColor(COLORS.RED)
 				.setDescription(msg.content)
 				.setTimestamp();
 

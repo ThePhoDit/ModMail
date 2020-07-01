@@ -1,8 +1,7 @@
-import { Message, Member, TextChannel, CategoryChannel } from 'eris';
+import { Message,  TextChannel, CategoryChannel } from 'eris';
 
 interface CommandData {
 	msg: Message;
-	member: Member;
 	args: string[];
 	channel: TextChannel;
 	category: CategoryChannel;

@@ -14,9 +14,9 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 
 	const messages: string[] = [];
 	for (const msg of (channel as TextChannel).messages.values()) {
-		if (!msg.content) continue;
+		if (!msg.content && msg.embeds.length === 0) continue;
 		messages.push(`${msg.author.id === (channel as TextChannel).topic ?
-			'DM' : 'SERVER'} | ${msg.author.username}#${msg.author.discriminator} | ${msg.content}`);
+			'DM' : 'SERVER'} | ${msg.author.username}#${msg.author.discriminator} | ${msg.content ? msg.content : msg.embeds[0].description}`);
 	}
 
 	caller.db.set(`threads.${(channel as TextChannel).topic}`, { userID: userDB.userID, opened: false, current: null, total: userDB.total + 1 });

@@ -12,7 +12,6 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 	const userDB: Thread = await caller.db.get(`threads.${(channel as TextChannel).topic}`);
 	if (!userDB) return;
 	if (!userDB.opened) return;
-	console.log((channel as TextChannel).name);
 
 	const messages: string[] = [];
 	for (const msg of (channel as TextChannel).messages.values()) {

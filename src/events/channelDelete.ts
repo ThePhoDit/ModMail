@@ -1,6 +1,7 @@
 import Caller from '../lib/structures/Caller';
 import { Channel, TextChannel } from 'eris';
 import { Thread } from '../lib/types/Database';
+import {COLORS} from '../Constants';
 
 export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 	const category = caller.bot.getChannel(caller.category);
@@ -15,8 +16,17 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 	const messages: string[] = [];
 	for (const msg of (channel as TextChannel).messages.values()) {
 		if (!msg.content && msg.embeds.length === 0) continue;
-		messages.push(`${msg.author.id === (channel as TextChannel).topic ?
-			'DM' : 'SERVER'} | ${msg.author.username}#${msg.author.discriminator} | ${msg.content ? msg.content : msg.embeds[0].description}`);
+		let location: string;
+		// Location of the message.
+		if (msg.embeds.length > 0 &&
+			(msg.embeds[0].color === parseInt(COLORS.RED.replace('#', ''), 16) ||
+				msg.embeds[0].color === parseInt(COLORS.BLUE.replace('#', ''), 16))) location = 'DM';
+		else if (msg.embeds.length > 0) location = 'SERVER';
+		else location = 'SERVER - Out Of Thread';
+		// Message author
+		const author = msg.embeds.length > 0 ? msg.embeds[0].author!.name : `${msg.author.username}#${msg.author.discriminator}`;
+		const content = msg.embeds.length > 0 && msg.embeds[0].description ? msg.embeds[0].description : msg.content;
+		messages.push(`${location} | ${author} | ${content}`);
 	}
 
 	caller.db.set(`threads.${(channel as TextChannel).topic}`, { userID: userDB.userID, opened: false, current: null, total: userDB.total + 1 });

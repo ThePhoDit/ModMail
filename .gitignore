@@ -3,3 +3,4 @@ prod/
 .idea/
 commandSchema.txt
 .env
+json.sqlite

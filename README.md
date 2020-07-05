@@ -14,7 +14,7 @@ Setting up this bot is pretty easy, just follow the steps below.
     HOST=YOUR_HOST(READ_BELOW)
     URL=YOUR_REPLIT_URL
     ````
-    > The host option is only required if [Repl.it](https://repl.it/) is going to be used. If so, the value must be `REPLIT`, if not, feel free to remove that line. If you are using Repl.it, provide the URL too (should look something like this: `https://ProjectName--YourUsername.repl.co`). Paste that same URL [here](ping.mat1.repl.co) and click "ADD".
+    > The host option is only required if [Repl.it](https://repl.it/) is going to be used. If so, the value must be `REPLIT`, if not, feel free to remove that line. If you are using Repl.it, provide the URL too (should look something like this: `https://ProjectName--YourUsername.repl.co`). Paste that same URL [here](http://ping.mat1.repl.co/) and click "ADD".
 4. Run `npm run setup`.
 5. Fill the `src/config.ts` file.
 6. Run `npm run start` to start your bot. If you want to use any node runtime such as PM2, run `npm run build` and then start the process as you would normally do (file `prod/index.js`).

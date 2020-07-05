@@ -1,6 +1,6 @@
 import Command from '../lib/structures/Command';
 import MessageEmbed from '../lib/structures/MessageEmbed';
-import {COLORS} from '../Constants';
+import { COLORS } from '../Constants';
 
 export default new Command('reply', async (caller, cmd, userDB) => {
 	if (!cmd.args[0]) return caller.utils.discord.createMessage(cmd.channel.id, 'You must provide a reply.');

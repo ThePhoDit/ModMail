@@ -47,6 +47,7 @@ class DiscordUtils {
 				return await chnl.createMessage(content, file ? file : undefined);
 			} catch (e) {
 				console.error(`[Messages Manager] Could not send a message to channel ${channel} (${chnl.name} -> ${chnl.guild.name})`);
+				console.log('3 S');
 				return false;
 			}
 		}

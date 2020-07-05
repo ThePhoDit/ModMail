@@ -12,6 +12,7 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 	const userDB: Thread = await caller.db.get(`threads.${(channel as TextChannel).topic}`);
 	if (!userDB) return;
 	if (!userDB.opened) return;
+	console.log((channel as TextChannel).name);
 
 	const messages: string[] = [];
 	for (const msg of (channel as TextChannel).messages.values()) {
@@ -24,7 +25,7 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 		else if (msg.embeds.length > 0) location = 'SERVER';
 		else location = 'SERVER - Out Of Thread';
 		// Message author
-		const author = msg.embeds.length > 0 ? msg.embeds[0].author!.name : `${msg.author.username}#${msg.author.discriminator}`;
+		const author = msg.embeds.length > 0 ? msg.embeds[0].author?.name || `${msg.author.username}#${msg.author.discriminator}` : `${msg.author.username}#${msg.author.discriminator}`;
 		const content = msg.embeds.length > 0 && msg.embeds[0].description ? msg.embeds[0].description : msg.content;
 		messages.push(`${location} | ${author} | ${content}`);
 	}

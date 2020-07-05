@@ -1,8 +1,8 @@
-import config from '../../../config.json';
+import config from '../../config';
 import {  Client } from 'eris';
 import { EventEmitter } from 'events';
 import UtilsManager from '../utils/index';
-import JSONdb from 'simple-json-db';
+import db from 'quick.db';
 import { readdir } from 'fs';
 import { join } from 'path';
 import Command from './Command';
@@ -14,8 +14,9 @@ class Caller extends EventEmitter {
 	managers: string[];
 	helpers: string[];
 	category: string;
+	logsChannel: string;
 	utils = new UtilsManager(this);
-	db = new JSONdb(join('..', '..', '..', 'database.json'));
+	db = db;
 	constructor(private readonly token: string) {
 		super();
 		this.token = token;
@@ -37,9 +38,10 @@ class Caller extends EventEmitter {
 		this.managers = config.bot_managers || [];
 		this.helpers = config.bot_helpers || [];
 		this.category = config.bot_category || '';
+		this.logsChannel = config.logs_channel || '';
 
 		this.utils = new UtilsManager(this);
-		this.db = new JSONdb(join('..', '..', '..', 'database.json'));
+		this.db = db;
 
 		readdir(join(__dirname, '..', '..', 'events'), async (error, files) => {
 			if (error) return console.error(error);

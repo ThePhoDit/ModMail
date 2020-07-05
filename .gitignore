@@ -1,4 +1,5 @@
 node_modules
-./prod
+prod/
 .idea/
 commandSchema.txt
+.env

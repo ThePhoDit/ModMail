@@ -13,11 +13,12 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 
 	// If message is in DMs and is not by a bot.
 	if (msg.channel.type === 1 && !msg.author.bot) {
-		if (caller.db.has('blacklist') && (await caller.db.get('blacklist') as string[]).includes(msg.author.id)) return;
+		const blacklist: string[] | null = await caller.db.get('mail.blacklist');
+		if (blacklist?.includes(msg.author.id)) return;
 
 		// If thread is opened.
-		if (caller.db.has(`threads.${msg.author.id}`) && (await caller.db.get(`threads.${msg.author.id}`) as Thread).opened) {
-			userDB = await caller.db.get(`threads.${msg.author.id}`);
+		if (caller.db.has(`mail.threads.${msg.author.id}`) && (await caller.db.get(`mail.threads.${msg.author.id}`) as Thread).opened) {
+			userDB = await caller.db.get(`mail.threads.${msg.author.id}`);
 			const channel = category.channels.get(userDB.current!);
 			if (!channel) return caller.utils.discord.createMessage(msg.author.id, 'An error has occurred - 1.', true);
 
@@ -37,13 +38,13 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 			});
 			if (!channel) return caller.utils.discord.createMessage(msg.author.id, 'An error has occurred - 2.', true);
 
-			caller.db.set(`threads.${msg.author.id}`, {
+			caller.db.set(`mail.threads.${msg.author.id}`, {
 				userID: msg.author.id,
 				opened: true,
 				current: channel.id,
-				total: caller.db.has(`threads.${msg.author.id}`) ? (await caller.db.get(`threads.${msg.author.id}`) as Thread).total++ : 1
+				total: caller.db.has(`mail.threads.${msg.author.id}`) ? (await caller.db.get(`mail.threads.${msg.author.id}`) as Thread).total++ : 1
 			});
-			userDB = await caller.db.get(`threads.${msg.author.id}`);
+			userDB = await caller.db.get(`mail.threads.${msg.author.id}`);
 			// Send message to the new chanel, then to the user.
 			const userOpenEmbed = new MessageEmbed()
 				.setTitle(config.messages.thread_open_title || 'Thread Opened')
@@ -67,7 +68,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	}
 
 	// Out of DMs section.
-	userDB = await caller.db.get(`threads.${(msg.channel as TextChannel).topic}`);
+	userDB = await caller.db.get(`mail.threads.${(msg.channel as TextChannel).topic}`);
 	const prefix = config.bot_prefix || '/';
 	const prefixMatch = new RegExp(`${prefix}[a-z]|[A-Z]`);
 	if (!msg.content.match(prefixMatch)) return;

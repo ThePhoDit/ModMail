@@ -1,9 +1,9 @@
 export default {
-	bot_prefix: '', // The prefix you will use to interact with the bot.
+	bot_prefix: '/', // The prefix you will use to interact with the bot.
 	bot_status: '', // The status to display (optional).
-	bot_category: '', // The category ID where new threads will be created.
-	bot_managers: [''], // List of roles IDs that will be able to use commands with manager permission requirement (optional).
-	bot_helpers: [''], // List of roles IDs that will be able to use commands with helper permission requirement (optional).
+	bot_category: '726767037283696650', // The category ID where new threads will be created.
+	bot_managers: ['627156046070153216'], // List of roles IDs that will be able to use commands with manager permission requirement (optional).
+	bot_helpers: ['627156046070153216'], // List of roles IDs that will be able to use commands with helper permission requirement (optional).
 	logs_channel: '', // Channel where logs will be sent (optional).
 	role_ping: '', // ID of the role to ping on new threads (optional).
 	messages: { // Messages text segments (optional).

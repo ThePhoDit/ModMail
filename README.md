@@ -23,3 +23,11 @@ Setting up this bot is pretty easy, just follow the steps below.
 
 - Someone DMs your bot and a thread will be opened inside the specified category.
 - Moderators get notified and start chatting with them via the bot.
+
+## Commands
+
+````text
+reply {content} - Thread Only
+close - Thread Only
+set
+````

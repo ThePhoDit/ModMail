@@ -1,15 +1,15 @@
 import Caller from '../lib/structures/Caller';
 import { Channel, TextChannel } from 'eris';
 import { Thread } from '../lib/types/Database';
-import {COLORS} from '../Constants';
+import { COLORS } from '../Constants';
 
 export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 	const category = caller.bot.getChannel(caller.category);
 	if (!category || category.type !== 4) return;
+
 	// If not text or not in ModMail category.
 	if (channel.type !== 0) return;
-	if (!caller.logsChannel) return;
-	const userDB: Thread = await caller.db.get(`threads.${(channel as TextChannel).topic}`);
+	const userDB: Thread = await caller.db.get(`mail.threads.${(channel as TextChannel).topic}`);
 	if (!userDB) return;
 	if (!userDB.opened) return;
 
@@ -29,7 +29,9 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 		messages.push(`${location} | ${author} | ${content}`);
 	}
 
-	caller.db.set(`threads.${(channel as TextChannel).topic}`, { userID: userDB.userID, opened: false, current: null, total: userDB.total + 1 });
+	caller.db.set(`mail.threads.${(channel as TextChannel).topic}`, { userID: userDB.userID, opened: false, current: null, total: userDB.total + 1 });
+
+	if (!caller.logsChannel) return;
 	await caller.utils.discord.createMessage(caller.logsChannel, `A thread from ${(channel as TextChannel).name} has been closed.`, false,
 		{ name: `${(channel as TextChannel).name}-${Date.now()}.html`, file: Buffer.from(`
 <html lang="en">

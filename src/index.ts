@@ -22,5 +22,7 @@ if (process.env.HOST && process.env.HOST == 'REPLIT') {
 
 import Caller from './lib/structures/Caller';
 const Client = new Caller(process.env.BOT_TOKEN);
+if (!Client.db.has('mail.blacklist')) Client.db.set('mail.blacklist', []);
+
 Client.login();
 

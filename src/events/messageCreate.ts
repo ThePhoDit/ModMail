@@ -1,5 +1,5 @@
 import Caller from '../lib/structures/Caller';
-import {Message, TextChannel} from 'eris';
+import { Message, TextChannel } from 'eris';
 import { Thread } from '../lib/types/Database';
 import MessageEmbed from '../lib/structures/MessageEmbed';
 import config from '../config';
@@ -70,7 +70,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	// Out of DMs section.
 	userDB = await caller.db.get(`mail.threads.${(msg.channel as TextChannel).topic}`);
 	const prefix = config.bot_prefix || '/';
-	const prefixMatch = new RegExp(`${prefix}[a-z]|[A-Z]`);
+	const prefixMatch = new RegExp(`${'\\' + prefix}[a-z]|[A-Z]`);
 	if (!msg.content.match(prefixMatch)) return;
 
 	const args = msg.content.slice(prefix.length).trim().split(/ +/g);

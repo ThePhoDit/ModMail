@@ -8,13 +8,13 @@ export default new Command('snippet', async (caller, cmd) => {
 		// Create a snippet.
 		case 'create': case 'add': case 'new':
 			if (!cmd.args[2]) return caller.utils.discord.createMessage(cmd.channel.id, 'Provide a valid text.');
-			if (caller.db.has(`mail.snippets.${cmd.args[1]}`)) return caller.utils.discord.createMessage(cmd.channel.id, 'An snippet with this name already exists.');
+			if (caller.db.has(`mail.snippets.${cmd.args[1]}`)) return caller.utils.discord.createMessage(cmd.channel.id, 'A snippet with this name already exists.');
 			caller.db.set(`mail.snippets.${cmd.args[1]}`, cmd.args.slice(2).join(' '));
 			caller.utils.discord.createMessage(cmd.channel.id, 'Snippet created.');
 			break;
 		// Delete a snippet.
 		case 'delete': case 'remove': case 'rmv':
-			if (!caller.db.has(`mail.snippets.${cmd.args[1]}`)) return caller.utils.discord.createMessage(cmd.channel.id, 'An snippet with this name does not exist.');
+			if (!caller.db.has(`mail.snippets.${cmd.args[1]}`)) return caller.utils.discord.createMessage(cmd.channel.id, 'A snippet with this name does not exist.');
 			caller.db.delete(`mail.snippets.${cmd.args[1]}`);
 			caller.utils.discord.createMessage(cmd.channel.id, 'Snippet deleted.');
 			break;

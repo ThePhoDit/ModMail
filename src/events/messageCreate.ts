@@ -90,6 +90,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	if (!cmd && caller.db.has(`mail.snippets.${command.toLowerCase()}`)) {
 		const snippet = await caller.db.get(`mail.snippets.${command.toLowerCase()}`);
 		if (!snippet) return;
+		if (!((config.bot_helpers as string[]).some(r => msg.member!.roles.includes(r)))) return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 		const userEmbed = new MessageEmbed()
 			.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
 			.setColor(COLORS.RED)

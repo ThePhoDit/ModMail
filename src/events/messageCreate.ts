@@ -77,7 +77,27 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	const command = args.shift();
 	if (!command) return;
 	const cmd = caller.commands.get(command.toLowerCase()) || caller.commands.get(caller.aliases.get(command.toLowerCase()) as string);
-	if (!cmd) return;
+
+	// If no command is found, try to look for a snippet.
+	if (!cmd && caller.db.has(`mail.snippets.${command.toLowerCase()}`)) {
+		const snippet = await caller.db.get(`mail.snippets.${command.toLowerCase()}`);
+		if (!snippet) return;
+		const userEmbed = new MessageEmbed()
+			.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
+			.setColor(COLORS.RED)
+			.setDescription(snippet)
+			.setTimestamp();
+		const channelEmbed = new MessageEmbed()
+			.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
+			.setColor(COLORS.GREEN)
+			.setDescription(snippet)
+			.setTimestamp();
+
+		caller.utils.discord.createMessage(msg.channel.id, { embed: channelEmbed.code });
+		caller.utils.discord.createMessage(userDB!.userID, { embed: userEmbed.code }, true);
+		return;
+	}
+	else if (!cmd) return;
 
 	if (!((config[`bot_${cmd.options.level.toLowerCase()}s` as keyof typeof config] as string[]).some(r => msg.member!.roles.includes(r)))) return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 	if (cmd.options.threadOnly && (!userDB || !category.channels.has(msg.channel.id))) return;

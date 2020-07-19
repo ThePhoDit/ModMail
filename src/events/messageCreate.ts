@@ -31,8 +31,9 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 			const guildEmbed = new MessageEmbed()
 				.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
 				.setColor(COLORS.RED)
-				.setDescription(msg.content)
+				.setDescription(msg.content || 'No content provided.')
 				.setTimestamp();
+			if (files.length > 0) guildEmbed.addField('Files', `This message contains ${files.length} file${files.length > 1 ? 's' : ''}`);
 
 			caller.utils.discord.createMessage(channel.id, {embed: guildEmbed.code}, false, files);
 		}
@@ -63,10 +64,11 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 				.setTitle(config.messages.open_notification || 'New Thread')
 				.setThumbnail(msg.author.dynamicAvatarURL())
 				.setColor(COLORS.BLUE)
-				.setDescription(msg.content)
+				.setDescription(msg.content  || 'No content provided.')
 				.addField('User', `${msg.author.username}#${msg.author.discriminator} \`[${msg.author.id}]\``)
 				.addField('Past Threads', userDB.total.toString())
 				.setTimestamp();
+			if (files.length > 0) guildOpenEmbed.addField('Files', `This message contains ${files.length} file${files.length > 1 ? 's' : ''}`);
 
 			caller.utils.discord.createMessage(msg.author.id, { embed: userOpenEmbed.code }, true);
 			(channel as TextChannel).createMessage({ content: config.role_ping ? `<@&${config.role_ping}>` : '', embed: guildOpenEmbed.code }, files);

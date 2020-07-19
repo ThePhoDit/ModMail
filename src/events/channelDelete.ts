@@ -26,7 +26,9 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 		// Message author
 		const author = msg.embeds.length > 0 ? msg.embeds[0].author?.name || `${msg.author.username}#${msg.author.discriminator}` : `${msg.author.username}#${msg.author.discriminator}`;
 		const content = msg.embeds.length > 0 && msg.embeds[0].description ? msg.embeds[0].description : msg.content;
-		messages.push(`${location} | ${author} | ${content}`);
+		const files: string[] = [];
+		if (msg.attachments.length > 0) for (const file of msg.attachments) files.push(file.url);
+		messages.push(`${location} | ${author} | ${content} | ${files.join(' ')}`);
 	}
 
 	caller.db.set(`mail.threads.${(channel as TextChannel).topic}`, { userID: userDB.userID, opened: false, current: null, total: userDB.total + 1 });
@@ -42,7 +44,7 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 </head>
 <body>
 	<h1>Thread Logs</h1><br><br>
-	<h3>Message Location | Author | Content</h3><br>
+	<h3>Message Location | Author | Content | Files</h3><br>
   <p>${messages.join('<br>')}</p>
 </body>
 </html>

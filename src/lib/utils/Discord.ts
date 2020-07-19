@@ -22,10 +22,10 @@ class DiscordUtils {
 	 * @param {string} channel - The Channel/User ID.
 	 * @param {string} content - The content of the message.
 	 * @param {boolean} [user=false] - Whether the message is sent to an user or not (optional)
-	 * @param {MessageFile} [file] - Discord Message File to send (optional)
+	 * @param {MessageFile|MessageFile[]} [file] - Discord Message File to send (optional)
 	 * @returns {Promise<Message|boolean>} - A Discord Message or false.
 	 */
-	async createMessage(channel: string, content: MessageContent, user = false, file?: MessageFile): Promise<Message | false> {
+	async createMessage(channel: string, content: MessageContent, user = false, file?: MessageFile | MessageFile[]): Promise<Message | false> {
 		if (user) {
 			const usr = this.caller.bot.users.get(channel) || await this.fetchUser(channel);
 			if (!usr) return false;

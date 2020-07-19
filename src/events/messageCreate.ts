@@ -1,9 +1,10 @@
 import Caller from '../lib/structures/Caller';
-import { Message, TextChannel } from 'eris';
+import { Message, MessageFile, TextChannel } from 'eris';
 import { Thread } from '../lib/types/Database';
 import MessageEmbed from '../lib/structures/MessageEmbed';
 import config from '../config';
 import { COLORS } from '../Constants';
+import Axios from 'axios';
 
 export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	const category = caller.bot.getChannel(caller.category);
@@ -15,6 +16,11 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	if (msg.channel.type === 1 && !msg.author.bot) {
 		const blacklist: string[] | null = await caller.db.get('mail.blacklist');
 		if (blacklist?.includes(msg.author.id)) return;
+
+		const files: MessageFile[] = [];
+		if (msg.attachments.length > 0) for (const file of msg.attachments) Axios.get<Buffer>(file.url, { responseType: 'arraybuffer' })
+			.then((response) => files.push({ file: response.data, name: file.filename }))
+			.catch(() => false);
 
 		// If thread is opened.
 		if (caller.db.has(`mail.threads.${msg.author.id}`) && (await caller.db.get(`mail.threads.${msg.author.id}`) as Thread).opened) {
@@ -28,7 +34,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 				.setDescription(msg.content)
 				.setTimestamp();
 
-			caller.utils.discord.createMessage(channel.id, {embed: guildEmbed.code});
+			caller.utils.discord.createMessage(channel.id, {embed: guildEmbed.code}, false, files);
 		}
 		// Not opened
 		else {
@@ -63,7 +69,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 				.setTimestamp();
 
 			caller.utils.discord.createMessage(msg.author.id, { embed: userOpenEmbed.code }, true);
-			(channel as TextChannel).createMessage({ content: config.role_ping ? `<@&${config.role_ping}>` : '', embed: guildOpenEmbed.code });
+			(channel as TextChannel).createMessage({ content: config.role_ping ? `<@&${config.role_ping}>` : '', embed: guildOpenEmbed.code }, files);
 		}
 	}
 

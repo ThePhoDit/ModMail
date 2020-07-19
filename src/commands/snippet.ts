@@ -1,6 +1,6 @@
 import Command from '../lib/structures/Command';
 
-export default new Command('reply', async (caller, cmd) => {
+export default new Command('snippet', async (caller, cmd) => {
 	if (!cmd.args[0]) return caller.utils.discord.createMessage(cmd.channel.id, 'Select `create` or `delete`.');
 	if (!cmd.args[1]) return caller.utils.discord.createMessage(cmd.channel.id, 'Provide a name.');
 

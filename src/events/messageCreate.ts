@@ -18,7 +18,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 		if (blacklist?.includes(msg.author.id)) return;
 
 		const files: MessageFile[] = [];
-		if (msg.attachments.length > 0) for (const file of msg.attachments) Axios.get<Buffer>(file.url, { responseType: 'arraybuffer' })
+		if (msg.attachments.length > 0) for (const file of msg.attachments) await Axios.get<Buffer>(file.url, { responseType: 'arraybuffer' })
 			.then((response) => files.push({ file: response.data, name: file.filename }))
 			.catch(() => false);
 

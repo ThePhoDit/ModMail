@@ -2,10 +2,12 @@ import config from '../../config';
 import {  Client } from 'eris';
 import { EventEmitter } from 'events';
 import UtilsManager from '../utils/index';
-import db from 'quick.db';
+import Database from 'better-sqlite3';
 import { readdir } from 'fs';
 import { join } from 'path';
 import Command from './Command';
+
+const db = new Database('modmail.db');
 
 class Caller extends EventEmitter {
 	bot: Client;

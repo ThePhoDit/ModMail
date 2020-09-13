@@ -1,10 +1,17 @@
-interface Thread {
-	userID: string;
-	opened: boolean;
-	current?: string;
-	total: number;
+interface UserDB {
+	user: string;
+	channel: string;
+	threads: number;
+	blacklisted: 0 | 1;
+}
+
+interface SnippetDB {
+	name: string;
+	creator: string;
+	content: string;
 }
 
 export {
-	Thread
+	UserDB,
+	SnippetDB
 };

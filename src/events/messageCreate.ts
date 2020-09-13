@@ -86,7 +86,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	command = command.slice(prefix.length);
 	const cmd = caller.commands.get(command.toLowerCase()) || caller.commands.get(caller.aliases.get(command.toLowerCase()) as string);
 
-	userDB = caller.db.prepare('SELECT * FROM users WHERE user = ?').get((msg.channel as TextChannel).topic);
+	userDB = caller.db.prepare('SELECT * FROM users WHERE channel = ?').get(msg.channel.id);
 
 	// If no command is found, try to look for a snippet.
 	const snippet: SnippetDB = caller.db.prepare('SELECT content FROM snippets WHERE name = ?').get(command);

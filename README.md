@@ -1,7 +1,9 @@
-# ModMail
+# [ModMail](https://mail.phodit.xyz/)
 
 ModMail is a Discord bot which main purpose is to provide users-to-moderators private communication.
 This bot needs to be hosted, as it is meant for a single Discord server.
+
+**Documentation:** https://mail.phodit.xyz/
 
 ## Setup
 
@@ -29,5 +31,7 @@ Setting up this bot is pretty easy, just follow the steps below.
 ````text
 reply {content} - Thread Only
 close - Thread Only
-set
+rename {new name} - Thread Only
+set {option} {values}
+snippet {add/rmv} {name} [content]
 ````

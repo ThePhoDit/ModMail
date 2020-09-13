@@ -24,7 +24,7 @@ export default new Command('reply', async (caller, cmd, userDB) => {
 		.setTimestamp();
 
 	caller.utils.discord.createMessage(cmd.channel.id, { embed: channelEmbed.code }, false, files);
-	caller.utils.discord.createMessage(userDB!.userID, { embed: userEmbed.code }, true, files);
+	caller.utils.discord.createMessage(userDB!.user, { embed: userEmbed.code }, true, files);
 },
 {
 	level: 'HELPER',

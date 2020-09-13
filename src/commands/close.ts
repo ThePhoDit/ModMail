@@ -12,7 +12,7 @@ export default new Command('close', async (caller, cmd, userDB) => {
 		.setDescription(config.messages.thread_close_main || 'Send a message to open a new thread.')
 		.setFooter(config.messages.thread_close_footer || 'Please do not abuse of this system.')
 		.setTimestamp();
-	caller.utils.discord.createMessage(userDB!.userID, { embed: embed.code }, true);
+	caller.utils.discord.createMessage(userDB!.user, { embed: embed.code }, true);
 },
 {
 	level: 'HELPER',

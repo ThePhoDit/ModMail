@@ -1,6 +1,6 @@
 import Caller from '../lib/structures/Caller';
 import { Channel, TextChannel } from 'eris';
-import { Thread } from '../lib/types/Database';
+import { UserDB } from '../lib/types/Database';
 import { COLORS } from '../Constants';
 
 export default async (caller: Caller, channel: Channel): Promise<unknown> => {
@@ -9,9 +9,9 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 
 	// If not text or not in ModMail category.
 	if (channel.type !== 0) return;
-	const userDB: Thread = await caller.db.get(`mail.threads.${(channel as TextChannel).topic}`);
+	const userDB: UserDB = caller.db.prepare('SELECT * FROM users WHERE user = ?').get((channel as TextChannel).topic);
 	if (!userDB) return;
-	if (!userDB.opened) return;
+	if (userDB.channel === '0') return;
 
 	const messages: string[] = [];
 	for (const msg of (channel as TextChannel).messages.values()) {
@@ -31,7 +31,7 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 		messages.push(`${location} | ${author} | ${content} | ${files.join(' ')}`);
 	}
 
-	caller.db.set(`mail.threads.${(channel as TextChannel).topic}`, { userID: userDB.userID, opened: false, current: null, total: userDB.total + 1 });
+	caller.db.prepare('UPDATE users SET channel = \'0\', threads = threads + 1 WHERE user = ?').run((channel as TextChannel).topic);
 
 	if (!caller.logsChannel) return;
 	await caller.utils.discord.createMessage(caller.logsChannel, `A thread from ${(channel as TextChannel).name} has been closed.`, false,

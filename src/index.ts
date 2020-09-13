@@ -22,7 +22,12 @@ if (process.env.HOST && process.env.HOST == 'REPLIT') {
 
 import Caller from './lib/structures/Caller';
 const Client = new Caller(process.env.BOT_TOKEN);
-if (!Client.db.has('mail.blacklist')) Client.db.set('mail.blacklist', []);
+
+// Create SQL tables.
+Client.db.prepare('CREATE TABLE IF NOT EXISTS users (user TEXT NOT NULL PRIMARY KEY, channel TEXT NOT NULL DEFAULT \'0\', threads INTEGER NOT NULL DEFAULT 0, blacklisted INTEGER NOT NULL DEFAULT 0)').run();
+Client.db.prepare('CREATE INDEX IF NOT EXISTS channel_index ON users (channel)').run();
+
+Client.db.prepare('CREATE TABLE IF NOT EXISTS snippets (name TEXT NOT NULL PRIMARY KEY, creator TEXT NOT NULL, content TEXT NOT NULL)').run();
 
 Client.login();
 

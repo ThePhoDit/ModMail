@@ -9,7 +9,7 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 
 	// If not text or not in ModMail category.
 	if (channel.type !== 0) return;
-	const userDB: UserDB = caller.db.prepare('SELECT * FROM users WHERE user = ?').get((channel as TextChannel).topic);
+	const userDB: UserDB = caller.db.prepare('SELECT * FROM users WHERE channel = ?').get(channel.id);
 	if (!userDB) return;
 	if (userDB.channel === '0') return;
 
@@ -31,7 +31,7 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 		messages.push(`${location} | ${author} | ${content} | ${files.join(' ')}`);
 	}
 
-	caller.db.prepare('UPDATE users SET channel = \'0\', threads = threads + 1 WHERE user = ?').run((channel as TextChannel).topic);
+	caller.db.prepare('UPDATE users SET channel = \'0\', threads = threads + 1 WHERE channel = ?').run(channel.id);
 
 	if (!caller.logsChannel) return;
 	await caller.utils.discord.createMessage(caller.logsChannel, `A thread from ${(channel as TextChannel).name} has been closed.`, false,

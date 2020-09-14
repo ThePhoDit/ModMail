@@ -77,6 +77,8 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 
 	// Out of DMs section.
 	const prefix = config.bot_prefix || '/';
+	
+	if (!msg.content.startsWith(prefix)) return;
 
 	const args = msg.content.trim().split(/ +/g);
 	if (args[0] === prefix) return;

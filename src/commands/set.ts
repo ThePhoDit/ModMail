@@ -1,6 +1,6 @@
 import Command from '../lib/structures/Command';
 import Axios from 'axios';
-import {UserDB} from '../lib/types/Database';
+import { UserDB } from '../lib/types/Database';
 
 export default new Command('set', async (caller, cmd) => {
 	if (!cmd.args[0]) return caller.utils.discord.createMessage(cmd.channel.id, 'Select `avatar`, `username` or `blacklist`.');
@@ -26,10 +26,10 @@ export default new Command('set', async (caller, cmd) => {
 			// Check if user is in the DB. If not, add it.
 
 			// eslint-disable-next-line no-case-declarations
-			let userDB: UserDB = caller.db.prepare('SELECT blacklisted FROM users WHERE user = ?').get(user.id);
+			let userDB: UserDB = await caller.db.getUser(user.id);
 			if (!userDB) {
-				caller.db.prepare('INSERT INTO users (user) VALUES (?)').run(user.id);
-				userDB = caller.db.prepare('SELECT blacklisted FROM users WHERE user = ?').get(user.id);
+				caller.db.addUser(user.id);
+				userDB = await caller.db.getUser(user.id);
 			}
 
 

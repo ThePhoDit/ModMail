@@ -14,10 +14,10 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 
 	// If message is in DMs and is not by a bot.
 	if (msg.channel.type === 1 && !msg.author.bot) {
-		userDB = caller.db.prepare('SELECT * FROM users WHERE user = ?').get(msg.author.id);
+		userDB = await caller.db.getUser(msg.author.id);
 		if (!userDB) {
-			caller.db.prepare('INSERT INTO users (user) VALUES (?)').run(msg.author.id);
-			userDB = caller.db.prepare('SELECT * FROM users WHERE user = ?').get(msg.author.id);
+			caller.db.addUser(msg.author.id);
+			userDB = await caller.db.getUser(msg.author.id);
 		}
 		// Check if user is in the blacklist.
 		if (userDB.blacklisted) return;
@@ -49,8 +49,8 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 			});
 			if (!channel) return caller.utils.discord.createMessage(msg.author.id, 'An error has occurred - 2.', true);
 
-			caller.db.prepare('UPDATE users SET channel = ? WHERE user = ?').run(channel.id, msg.author.id);
-			userDB = caller.db.prepare('SELECT * FROM users WHERE user = ?').get(msg.author.id);
+			caller.db.boundChannel(msg.author.id, channel.id);
+			userDB = await caller.db.getUser(msg.author.id);
 
 			// Send message to the new channel, then to the user.
 			const userOpenEmbed = new MessageEmbed()
@@ -77,7 +77,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 
 	// Out of DMs section.
 	const prefix = config.bot_prefix || '/';
-	
+
 	if (!msg.content.startsWith(prefix)) return;
 
 	const args = msg.content.trim().split(/ +/g);
@@ -88,10 +88,10 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	command = command.slice(prefix.length);
 	const cmd = caller.commands.get(command.toLowerCase()) || caller.commands.get(caller.aliases.get(command.toLowerCase()) as string);
 
-	userDB = caller.db.prepare('SELECT * FROM users WHERE channel = ?').get(msg.channel.id);
+	userDB = await caller.db.getUser(msg.channel.id, true);
 
 	// If no command is found, try to look for a snippet.
-	const snippet: SnippetDB = caller.db.prepare('SELECT content FROM snippets WHERE name = ?').get(command);
+	const snippet: SnippetDB = await caller.db.getSnippet(command);
 	if (!cmd && userDB && snippet && category.channels.has(msg.channel.id)) {
 		if (!((config.bot_helpers as string[]).some(r => msg.member!.roles.includes(r)))) return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 		const userEmbed = new MessageEmbed()

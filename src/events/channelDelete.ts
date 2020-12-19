@@ -9,7 +9,7 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 
 	// If not text or not in ModMail category.
 	if (channel.type !== 0) return;
-	const userDB: UserDB = caller.db.prepare('SELECT * FROM users WHERE channel = ?').get(channel.id);
+	const userDB: UserDB = caller.db.getUser(channel.id, true);
 	if (!userDB) return;
 	if (userDB.channel === '0') return;
 

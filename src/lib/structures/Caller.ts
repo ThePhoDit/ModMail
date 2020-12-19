@@ -1,13 +1,18 @@
 import config from '../../config';
-import {  Client } from 'eris';
+import { Client } from 'eris';
 import { EventEmitter } from 'events';
 import UtilsManager from '../utils/index';
-import Database from 'better-sqlite3';
 import { readdir } from 'fs';
 import { join } from 'path';
 import Command from './Command';
+import Mongo from '../../database/mongo/mongo';
+import SQL from '../../database/sql/sql';
 
-const db = new Database('modmail.db');
+let DB: typeof Mongo | typeof SQL;
+if (process.env.DB && process.env.DB === 'MONGO')
+	DB = Mongo as typeof Mongo;
+else
+	DB = SQL as typeof SQL;
 
 class Caller extends EventEmitter {
 	bot: Client;
@@ -18,7 +23,7 @@ class Caller extends EventEmitter {
 	category: string;
 	logsChannel: string;
 	utils = new UtilsManager(this);
-	db = db;
+	db: typeof DB
 	constructor(private readonly token: string) {
 		super();
 		this.token = token;
@@ -43,7 +48,7 @@ class Caller extends EventEmitter {
 		this.logsChannel = config.logs_channel || '';
 
 		this.utils = new UtilsManager(this);
-		this.db = db;
+		this.db = DB.getDatabase();
 
 		readdir(join(__dirname, '..', '..', 'events'), async (error, files) => {
 			if (error) return console.error(error);

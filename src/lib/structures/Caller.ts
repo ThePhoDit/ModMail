@@ -8,11 +8,11 @@ import Command from './Command';
 import Mongo from '../../database/mongo/mongo';
 import SQL from '../../database/sql/sql';
 
-let DB: typeof Mongo | typeof SQL;
+let DB: Mongo | SQL;
 if (process.env.DB && process.env.DB === 'MONGO')
-	DB = Mongo as typeof Mongo;
+	DB = Mongo.getDatabase();
 else
-	DB = SQL as typeof SQL;
+	DB = SQL.getDatabase();
 
 class Caller extends EventEmitter {
 	bot: Client;
@@ -48,7 +48,7 @@ class Caller extends EventEmitter {
 		this.logsChannel = config.logs_channel || '';
 
 		this.utils = new UtilsManager(this);
-		this.db = DB.getDatabase();
+		this.db = DB;
 
 		readdir(join(__dirname, '..', '..', 'events'), async (error, files) => {
 			if (error) return console.error(error);

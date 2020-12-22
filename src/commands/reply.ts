@@ -25,7 +25,6 @@ export default new Command('reply', async (caller, cmd, userDB) => {
 
 	caller.utils.discord.createMessage(cmd.channel.id, { embed: channelEmbed.code }, false, files);
 	caller.utils.discord.createMessage(userDB!.user, { embed: userEmbed.code }, true, files);
-	cmd.msg.addReaction('✅');
 },
 {
 	level: 'HELPER',

@@ -41,6 +41,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 			if (files.length > 0) guildEmbed.addField('Files', `This message contains ${files.length} file${files.length > 1 ? 's' : ''}`);
 
 			caller.utils.discord.createMessage(channel.id, {embed: guildEmbed.code}, false, files);
+			msg.addReaction('✅');
 		}
 		// Not opened
 		else {

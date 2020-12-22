@@ -1,5 +1,5 @@
 export default {
-	bot_prefix: '/', // The prefix you will use to interact with the bot.
+	bot_prefix: '', // The prefix you will use to interact with the bot.
 	bot_status: '', // The status to display (optional).
 	bot_category: '', // The category ID where new threads will be created.
 	bot_managers: [], // List of roles IDs that will be able to use commands with manager permission requirement (optional).

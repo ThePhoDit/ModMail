@@ -19,7 +19,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 			await caller.db.addUser(msg.author.id);
 			userDB = await caller.db.getUser(msg.author.id) as UserDB;
 		}
-		console.log(userDB);
+
 		// Check if user is in the blacklist.
 		if (userDB.blacklisted) return;
 

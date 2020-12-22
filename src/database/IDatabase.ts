@@ -2,7 +2,7 @@ import { SnippetDB, UserDB } from '../lib/types/Database';
 
 export interface IDatabase {
 	getUser(id: string, channel: boolean): Promise<UserDB | null>;
-	addUser(id: string): void;
+	addUser(id: string): Promise<void>;
 	boundChannel(userID: string, channelID: string): Promise<void>;
 	getSnippet(name: string): Promise<SnippetDB | null>;
 	closeChannel(id: string): void;

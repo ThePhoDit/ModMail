@@ -1,12 +1,13 @@
 import { UserDB, SnippetDB } from '../../lib/types/Database';
 import { IDatabase } from '../IDatabase';
-import mongoose, { connect } from 'mongoose';
+import { connect, set } from 'mongoose';
 import { User, Snippet } from './Schemas';
 
 if (!process.env.MONGO_URI) throw new Error('[MONGO DB] No URI provided.');
-mongoose.set('useFindAndModify', false);
+set('useFindAndModify', false);
 
 export default class Mongo implements IDatabase {
+	// @ts-ignore
 	private DB;
 	static db: Mongo;
 
@@ -31,6 +32,7 @@ export default class Mongo implements IDatabase {
 	}
 
 	async addUser(id: string): Promise<void> {
+		// @ts-ignore
 		await User.create({ user: id });
 	}
 
@@ -74,6 +76,7 @@ export default class Mongo implements IDatabase {
 
 	createSnippet(name: string, creatorID: string, content: string): void {
 		Snippet.create({
+			// @ts-ignore
 			name,
 			creator: creatorID,
 			content

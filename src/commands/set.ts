@@ -26,22 +26,22 @@ export default new Command('set', async (caller, cmd) => {
 			// Check if user is in the DB. If not, add it.
 
 			// eslint-disable-next-line no-case-declarations
-			let userDB: UserDB = await caller.db.getUser(user.id);
+			let userDB = await caller.db.getUser(user.id);
 			if (!userDB) {
-				caller.db.addUser(user.id);
-				userDB = await caller.db.getUser(user.id);
+				await caller.db.addUser(user.id);
+				userDB = await caller.db.getUser(user.id) as UserDB;
 			}
 
 
 			switch (cmd.args[1]) {
 				case 'add':
 					if (userDB.blacklisted) return caller.utils.discord.createMessage(cmd.channel.id, 'User is already blacklisted.');
-					caller.db.prepare('UPDATE users SET blacklisted = 1 WHERE user = ?').run(user.id);
+					caller.db.updateBlacklist(user.id, 'add');
 					caller.utils.discord.createMessage(cmd.channel.id, 'User added to the blacklist.');
 					break;
 				case 'remove': case 'rmv':
 					if (!userDB.blacklisted) return caller.utils.discord.createMessage(cmd.channel.id, 'User not blacklisted.');
-					caller.db.prepare('UPDATE users SET blacklisted = 0 WHERE user = ?').run(user.id);
+					caller.db.updateBlacklist(user.id, 'remove');
 					caller.utils.discord.createMessage(cmd.channel.id, 'User removed from the blacklist.');
 					break;
 				default:

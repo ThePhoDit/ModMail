@@ -1,6 +1,6 @@
 import Caller from '../lib/structures/Caller';
 import { Message, MessageFile, TextChannel } from 'eris';
-import { UserDB, SnippetDB } from '../lib/types/Database';
+import { UserDB } from '../lib/types/Database';
 import MessageEmbed from '../lib/structures/MessageEmbed';
 import config from '../config';
 import { COLORS } from '../Constants';
@@ -10,15 +10,16 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	const category = caller.bot.getChannel(caller.category);
 	if (!category || category.type !== 4) return;
 
-	let userDB: UserDB;
+	let userDB: UserDB | null;
 
 	// If message is in DMs and is not by a bot.
 	if (msg.channel.type === 1 && !msg.author.bot) {
 		userDB = await caller.db.getUser(msg.author.id);
 		if (!userDB) {
-			caller.db.addUser(msg.author.id);
-			userDB = await caller.db.getUser(msg.author.id);
+			await caller.db.addUser(msg.author.id);
+			userDB = await caller.db.getUser(msg.author.id) as UserDB;
 		}
+		console.log(userDB);
 		// Check if user is in the blacklist.
 		if (userDB.blacklisted) return;
 
@@ -50,7 +51,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 			if (!channel) return caller.utils.discord.createMessage(msg.author.id, 'An error has occurred - 2.', true);
 
 			caller.db.boundChannel(msg.author.id, channel.id);
-			userDB = await caller.db.getUser(msg.author.id);
+			userDB = await caller.db.getUser(msg.author.id) as UserDB;
 
 			// Send message to the new channel, then to the user.
 			const userOpenEmbed = new MessageEmbed()
@@ -91,7 +92,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	userDB = await caller.db.getUser(msg.channel.id, true);
 
 	// If no command is found, try to look for a snippet.
-	const snippet: SnippetDB = await caller.db.getSnippet(command);
+	const snippet = await caller.db.getSnippet(command);
 	if (!cmd && userDB && snippet && category.channels.has(msg.channel.id)) {
 		if (!((config.bot_helpers as string[]).some(r => msg.member!.roles.includes(r)))) return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 		const userEmbed = new MessageEmbed()

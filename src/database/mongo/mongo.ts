@@ -3,7 +3,7 @@ import { IDatabase } from '../IDatabase';
 import { connect, set } from 'mongoose';
 import { User, Snippet } from './Schemas';
 
-if (!process.env.MONGO_URI) throw new Error('[MONGO DB] No URI provided.');
+if (process.env.DB === 'MONGO' && !process.env.MONGO_URI) throw new Error('[MONGO DB] No URI provided.');
 set('useFindAndModify', false);
 
 export default class Mongo implements IDatabase {

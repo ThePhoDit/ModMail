@@ -25,4 +25,3 @@ const Client = new Caller(process.env.BOT_TOKEN);
 
 
 Client.login();
-

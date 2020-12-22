@@ -53,6 +53,7 @@ module.exports = {
 				'ignoreRestArgs': true
 			}
 		],
+		'@typescript-eslint/ban-ts-comment': 'off',
 		'no-trailing-spaces': [
 			'error'
 		],

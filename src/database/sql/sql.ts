@@ -60,6 +60,6 @@ export default class SQL implements IDatabase {
 	}
 
 	async getSnippets(): Promise<SnippetDB[]> {
-		return await this.DB.prepare('SELECT * FROM snippets') as SnippetDB[];
+		return await this.DB.prepare('SELECT * FROM snippets').all() as SnippetDB[];
 	}
 }

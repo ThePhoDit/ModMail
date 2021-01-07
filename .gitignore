@@ -4,3 +4,4 @@ prod/
 commandSchema.txt
 .env
 *.db
+src/config.ts

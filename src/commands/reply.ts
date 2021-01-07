@@ -25,6 +25,9 @@ export default new Command('reply', async (caller, cmd, userDB) => {
 
 	caller.utils.discord.createMessage(cmd.channel.id, { embed: channelEmbed.code }, false, files);
 	caller.utils.discord.createMessage(userDB!.user, { embed: userEmbed.code }, true, files);
+
+	// Add log to the DB.
+	caller.db.addMessage(cmd.msg.author.id, 'ADMIN', cmd.args.join(' '), userDB!.channel, files.length > 1 ? cmd.msg.attachments.map((a) => a.url) : undefined);
 },
 {
 	level: 'HELPER',

@@ -40,8 +40,8 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 				.setTimestamp();
 			if (files.length > 0) guildEmbed.addField('Files', `This message contains ${files.length} file${files.length > 1 ? 's' : ''}`);
 
-			caller.utils.discord.createMessage(channel.id, {embed: guildEmbed.code}, false, files);
-			msg.addReaction('✅');
+			caller.utils.discord.createMessage(channel.id, { embed: guildEmbed.code }, false, files);
+			msg.addReaction('✅').catch(() => false);
 		}
 		// Not opened
 		else {
@@ -51,7 +51,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 			});
 			if (!channel) return caller.utils.discord.createMessage(msg.author.id, 'An error has occurred - 2.', true);
 
-			caller.db.boundChannel(msg.author.id, channel.id);
+			await caller.db.boundChannel(msg.author.id, channel.id);
 			userDB = await caller.db.getUser(msg.author.id) as UserDB;
 
 			// Send message to the new channel, then to the user.
@@ -75,10 +75,17 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 			caller.utils.discord.createMessage(msg.author.id, { embed: userOpenEmbed.code }, true);
 			(channel as TextChannel).createMessage({ content: config.role_ping ? `<@&${config.role_ping}>` : '', embed: guildOpenEmbed.code }, files);
 		}
+		// Add log to the DB.
+		caller.db.addMessage(msg.author.id, 'USER', msg.content, userDB.channel, files.length > 0 ? msg.attachments.map((a) => a.url) : undefined);
 	}
 
 	// Out of DMs section.
 	const prefix = config.bot_prefix || '/';
+	if (msg.author.bot) return;
+
+	userDB = await caller.db.getUser(msg.channel.id, true);
+	if (userDB && !(msg.content.startsWith(`${prefix}reply`) || msg.content.startsWith(`${prefix}r`)))
+		caller.db.addMessage(msg.author.id, 'OOT', msg.content, userDB.channel);
 
 	if (!msg.content.startsWith(prefix)) return;
 
@@ -90,12 +97,11 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 	command = command.slice(prefix.length);
 	const cmd = caller.commands.get(command.toLowerCase()) || caller.commands.get(caller.aliases.get(command.toLowerCase()) as string);
 
-	userDB = await caller.db.getUser(msg.channel.id, true);
-
 	// If no command is found, try to look for a snippet.
 	const snippet = await caller.db.getSnippet(command);
 	if (!cmd && userDB && snippet && category.channels.has(msg.channel.id)) {
-		if (!((config.bot_helpers as string[]).some(r => msg.member!.roles.includes(r)))) return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
+		if (!((config.bot_helpers as string[]).some(r => msg.member!.roles.includes(r))))
+			return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 		const userEmbed = new MessageEmbed()
 			.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
 			.setColor(COLORS.RED)
@@ -109,11 +115,15 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 
 		caller.utils.discord.createMessage(msg.channel.id, { embed: channelEmbed.code });
 		caller.utils.discord.createMessage(userDB.user, { embed: userEmbed.code }, true);
+
+		// Add log to the DB.
+		caller.db.addMessage(msg.author.id, 'ADMIN', snippet.content, userDB.channel);
 		return;
 	}
 	else if (!cmd) return;
 
-	if (!((config[`bot_${cmd.options.level.toLowerCase()}s` as keyof typeof config] as string[]).some(r => msg.member!.roles.includes(r)))) return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
+	if (!((config[`bot_${cmd.options.level.toLowerCase()}s` as keyof typeof config] as string[]).some(r => msg.member!.roles.includes(r))))
+		return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 	if (cmd.options.threadOnly && (!userDB || !category.channels.has(msg.channel.id))) return;
 	const channel = msg.channel as TextChannel;
 

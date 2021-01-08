@@ -17,7 +17,7 @@ if %db%==MONGO (
     echo MONGO_URI=%mongo_uri% >> ../.env
 )
 
-copy config.ts.example ../src/config.ts
+copy config.ts.example ..\src\config.ts
 
 echo Done. Installing dependencies... Please, fill in the configuration file as specified in the documentation and run the command "npm run start" once the installation has finished.
 npm install

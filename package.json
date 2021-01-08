@@ -7,7 +7,7 @@
     "@types/better-sqlite3": "^5.4.0",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.6",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "better-sqlite3": "^7.1.0",
     "dotenv": "^8.2.0",
     "eris": "^0.13.3",

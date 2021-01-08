@@ -1,4 +1,4 @@
-import { UserDB, SnippetDB } from '../../lib/types/Database';
+import { UserDB, SnippetDB, MessageLog } from '../../lib/types/Database';
 import { IDatabase } from '../IDatabase';
 import { connect, set } from 'mongoose';
 import { User, Snippet } from './Schemas';
@@ -12,7 +12,9 @@ export default class Mongo implements IDatabase {
 	static db: Mongo;
 
 	private constructor() {
-		this.DB = connect(process.env.MONGO_URI!);
+		this.DB = connect(process.env.MONGO_URI!, {
+			useUnifiedTopology: true
+		});
 	}
 
 	static getDatabase(): Mongo {
@@ -50,8 +52,8 @@ export default class Mongo implements IDatabase {
 		return data ? data as SnippetDB : null;
 	}
 
-	closeChannel(id: string): void {
-		User.findOneAndUpdate(
+	async closeChannel(id: string): Promise<MessageLog[]> {
+		const user = await User.findOneAndUpdate(
 			{
 				channel: id
 			},
@@ -59,12 +61,15 @@ export default class Mongo implements IDatabase {
 				channel: '0',
 				$inc: {
 					threads: 1
-				}
-			}).exec();
+				},
+				logs: []
+			}).lean();
+
+		return (user as UserDB).logs;
 	}
 
 	updateBlacklist(userID: string, action: 'add' | 'remove'): void {
-		User.findOneAndUpdate(
+		User.update(
 			{
 				user: userID
 			},
@@ -89,5 +94,18 @@ export default class Mongo implements IDatabase {
 
 	async getSnippets(): Promise<SnippetDB[]> {
 		return await Snippet.find({}).lean() as SnippetDB[];
+	}
+
+	async addMessage(userID: string, location: 'USER' | 'ADMIN' | 'OOT', content: string, channelID: string, images: string[] | undefined = undefined): Promise<void> {
+		User.findOneAndUpdate(
+			{
+				channel: channelID
+			},
+			{
+				$push: {
+					logs: { userID, location, content, images }
+				}
+			}
+		).exec();
 	}
 }

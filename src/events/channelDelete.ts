@@ -1,9 +1,7 @@
 import Caller from '../lib/structures/Caller';
-import { Channel, TextChannel } from 'eris';
+import { TextChannel } from 'eris';
 import { UserDB } from '../lib/types/Database';
-import { COLORS } from '../Constants';
-
-export default async (caller: Caller, channel: Channel): Promise<unknown> => {
+export default async (caller: Caller, channel: TextChannel): Promise<unknown> => {
 	const category = caller.bot.getChannel(caller.category);
 	if (!category || category.type !== 4) return;
 
@@ -15,38 +13,141 @@ export default async (caller: Caller, channel: Channel): Promise<unknown> => {
 	if (userDB.channel === '0') return;
 
 	const messages: string[] = [];
-	for (const msg of (channel as TextChannel).messages.values()) {
-		if (!msg.content && msg.embeds.length === 0) continue;
-		let location: string;
-		// Location of the message.
-		if (msg.embeds.length > 0 &&
-			(msg.embeds[0].color === parseInt(COLORS.RED.replace('#', ''), 16) ||
-				msg.embeds[0].color === parseInt(COLORS.BLUE.replace('#', ''), 16))) location = 'DM';
-		else if (msg.embeds.length > 0) location = 'SERVER';
-		else location = 'SERVER - Out Of Thread';
+	const messagesArray = await caller.db.closeChannel(channel.id);
+	for (const msg of messagesArray) {
 		// Message author
-		const author = msg.embeds.length > 0 ? msg.embeds[0].author?.name || `${msg.author.username}#${msg.author.discriminator}` : `${msg.author.username}#${msg.author.discriminator}`;
-		const content = msg.embeds.length > 0 && msg.embeds[0].description ? msg.embeds[0].description : msg.content;
-		const files: string[] = [];
-		if (msg.attachments.length > 0) for (const file of msg.attachments) files.push(file.url);
-		messages.push(`${location} | ${author} | ${content} | ${files.join(' ')}`);
-	}
+		const author = caller.bot.users.get(msg.userID) || await caller.utils.discord.fetchUser(msg.userID);
 
-	caller.db.closeChannel(channel.id);
+		messages.push(`
+<div>
+		<h3 class="${msg.location}">${author ? `${author.username}#${author.discriminator}` : msg.userID} - ${msg.location === 'OOT' ? 'SERVER - Out Of Thread' : msg.location}</h3>
+		<p class="content-text">${msg.content}</p>
+		${msg.images ? `
+		<div class="files">
+				${msg.images.map((f, v) => `<a href="${f}">Image ${v}</a>`).join(' ')}
+		</div>` : ''}
+		<hr>
+</div>
+`);
+	}
 
 	if (!caller.logsChannel) return;
 	await caller.utils.discord.createMessage(caller.logsChannel, `A thread from ${(channel as TextChannel).name} has been closed.`, false,
 		{ name: `${(channel as TextChannel).name}-${Date.now()}.html`, file: Buffer.from(`
 <html lang="en">
 <head>
-  <title>ModMail Logs</title>
-  <meta name="description" content="Log of a closed thread.">
-  <link rel="icon" href=${caller.bot.user.dynamicAvatarURL()} type="image/icon type">
+  	<title>ModMail Logs</title>
+  	<meta charset="UTF-8">
+  	<meta name="description" content="Log of a closed thread.">
+  	<link rel="icon" href=${caller.bot.user.dynamicAvatarURL()} type="image/icon type">
+  	<style>
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #2C2F33
+        }
+
+        .topnav {
+            overflow: hidden;
+            background-color: #23272A;
+        }
+
+        .topnav-title {
+            background-color: #99AAB5;
+            overflow: hidden;
+            width: 213px;
+            float: left;
+        }
+
+        .topnav-title p {
+            float: left;
+            font-size: 20px;
+            color: #000000;
+            padding-left: 16px;
+            position: center;
+        }
+
+        .topnav-links {
+            overflow: hidden;
+            float: left;
+        }
+
+        .topnav-links a {
+            float: left;
+            text-align: center;
+            padding: 20px 16px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #7289DA;
+        }
+
+        .topnav-links a:hover {
+            color: white;
+        }
+
+        .main {
+            padding: 20px 20px;
+        }
+
+        h2 {
+            color: #99AAB5;
+        }
+
+        h3 {
+            color: #7289DA;
+        }
+
+        .files {
+            color: #fdc75b;
+        }
+
+        .files a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .files a:hover {
+            text-decoration: white;
+        }
+
+        .content-text {
+            color: white;
+            padding-left: 20px;
+        }
+        
+        .ADMIN {
+        	color: forestgreen;
+        }
+        
+        .USER {
+        	color: orangered;
+        }
+    </style>
 </head>
+
 <body>
-	<h1>Thread Logs</h1><br><br>
-	<h3>Message Location | Author | Content | Files</h3><br>
-  <p>${messages.join('<br>')}</p>
+
+		<div class="topnav">
+
+        <div class="topnav-title">
+            <img src="${caller.bot.user.dynamicAvatarURL()}" style="float: left; width: 63px; height: 63px">
+            <p>Thread Logs</p>
+        </div>
+
+        <div class="topnav-links">
+            <a href="https://mail.phodit.xyz">ModMail Project</a>
+            <a href="https://discord.gg/aUNhdFD">Support Server</a>
+        </div>
+
+    </div>
+    
+    <div class="main">
+    		<div>
+            <h2>Log from ${channel.guild.name}</h2>
+            <hr>
+        </div>
+        ${messages.join('')}
+		</div>
 </body>
 </html>
 `)});

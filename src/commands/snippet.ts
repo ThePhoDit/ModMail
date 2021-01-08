@@ -41,7 +41,8 @@ export default new Command('snippet', async (caller, cmd) => {
 			while (list.length > 0)
 				snippets.push(list.splice(0, s));
 			// Send the list
-			caller.utils.discord.createMessage(cmd.channel.id, `\`\`\`\nNAME  |  CREATOR | CONTENT\n-----------\n${snippets.join('\n')}\`\`\``);
+			for (const s of snippets)
+				caller.utils.discord.createMessage(cmd.channel.id, `\`\`\`\nNAME  |  CREATOR | CONTENT\n-----------\n${s.join('\n')}\`\`\``);
 			break;
 		default:
 			caller.utils.discord.createMessage(cmd.channel.id, 'Select `create`, `delete` or `list`.');

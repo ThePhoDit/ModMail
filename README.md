@@ -5,6 +5,9 @@ This bot needs to be hosted, as it is meant for a single Discord server.
 
 **Documentation:** https://mail.phodit.xyz/
 
+| :warning: **WARNING:** The guide below might be outdated, please follow the guide above. |
+| --- |
+
 ## Setup
 
 Setting up this bot is pretty easy, just follow the steps below.

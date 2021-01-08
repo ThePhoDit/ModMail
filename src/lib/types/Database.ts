@@ -3,6 +3,7 @@ interface UserDB {
 	channel: string;
 	threads: number;
 	blacklisted: 0 | 1;
+	logs: MessageLog[];
 }
 
 interface SnippetDB {
@@ -11,7 +12,15 @@ interface SnippetDB {
 	content: string;
 }
 
+interface MessageLog {
+	userID: string;
+	location: 'USER' | ' ADMIN' | 'OOT';
+	content: string;
+	images?: string[];
+}
+
 export {
 	UserDB,
-	SnippetDB
+	SnippetDB,
+	MessageLog
 };

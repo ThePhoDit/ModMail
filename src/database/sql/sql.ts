@@ -1,4 +1,4 @@
-import { UserDB, SnippetDB } from '../../lib/types/Database';
+import {UserDB, SnippetDB, MessageLog} from '../../lib/types/Database';
 import { IDatabase } from '../IDatabase';
 
 export default class SQL implements IDatabase {
@@ -9,9 +9,16 @@ export default class SQL implements IDatabase {
 	private constructor() {
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		this.DB = require('better-sqlite3')('modmail.db');
-		this.DB.prepare('CREATE TABLE IF NOT EXISTS users (user TEXT NOT NULL PRIMARY KEY, channel TEXT NOT NULL DEFAULT \'0\', threads INTEGER NOT NULL DEFAULT 0, blacklisted INTEGER NOT NULL DEFAULT 0)').run();
+		this.DB.prepare('CREATE TABLE IF NOT EXISTS users (user TEXT NOT NULL PRIMARY KEY, channel TEXT NOT NULL DEFAULT \'0\', threads INTEGER NOT NULL DEFAULT 0, blacklisted INTEGER NOT NULL DEFAULT 0, logs TEXT NOT NULL DEFAULT \'[]\')').run();
 		this.DB.prepare('CREATE INDEX IF NOT EXISTS channel_index ON users (channel)').run();
 		this.DB.prepare('CREATE TABLE IF NOT EXISTS snippets (name TEXT NOT NULL PRIMARY KEY, creator TEXT NOT NULL, content TEXT NOT NULL)').run();
+		// Changes that have been applied after bot creation.
+		try {
+			this.DB.prepare('ALTER TABLE users ADD COLUMN logs TEXT DEFAULT \'[]\'').run();
+		}
+		catch (e) {
+			console.log(e);
+		}
 	}
 
 	static getDatabase(): SQL {
@@ -43,8 +50,10 @@ export default class SQL implements IDatabase {
 		return data ? data : null;
 	}
 
-	closeChannel(id: string): void {
-		this.DB.prepare('UPDATE users SET channel = \'0\', threads = threads + 1 WHERE channel = ?').run(id);
+	async closeChannel(id: string): Promise<MessageLog[]> {
+		const data = await this.DB.prepare('SELECT logs FROM users WHERE channel = ?').get(id);
+		this.DB.prepare('UPDATE users SET channel = \'0\', threads = threads + 1, logs = \'[]\' WHERE channel = ?').run(id);
+		return JSON.parse(data.logs);
 	}
 
 	updateBlacklist(userID: string, action: 'add' | 'remove'): void {
@@ -61,5 +70,13 @@ export default class SQL implements IDatabase {
 
 	async getSnippets(): Promise<SnippetDB[]> {
 		return await this.DB.prepare('SELECT * FROM snippets').all() as SnippetDB[];
+	}
+
+	async addMessage(userID: string, location: 'USER' | 'ADMIN' | 'OOT', content: string, channelID: string, images: string[] | undefined = undefined): Promise<void> {
+		const result = await this.DB.prepare('SELECT logs FROM users WHERE channel = ?').get(channelID);
+		const array = JSON.parse(result.logs);
+		array.push({userID, location, content, images });
+		this.DB.prepare('UPDATE users SET logs = ? WHERE channel = ?').run(JSON.stringify(array), channelID);
+
 	}
 }

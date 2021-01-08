@@ -12,7 +12,9 @@ export default class Mongo implements IDatabase {
 	static db: Mongo;
 
 	private constructor() {
-		this.DB = connect(process.env.MONGO_URI!);
+		this.DB = connect(process.env.MONGO_URI!, {
+			useUnifiedTopology: true
+		});
 	}
 
 	static getDatabase(): Mongo {

@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import start from './server/index';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Monitor = require('ping-monitor');
 dotenv.config();
@@ -25,7 +24,9 @@ const Client = new Caller(process.env.BOT_TOKEN);
 
 Client.login();
 
-if (process.env.HOST !== 'HEROKU')
+if (process.env.HOST && process.env.HOST !== 'HEROKU') {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const { start } = require('./server/index');
 	start();
+}
 
-export default Client;

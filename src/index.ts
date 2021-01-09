@@ -24,6 +24,8 @@ const Client = new Caller(process.env.BOT_TOKEN);
 
 
 Client.login();
-start();
+
+if (process.env.HOST !== 'HEROKU')
+	start();
 
 export default Client;

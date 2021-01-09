@@ -1,18 +1,41 @@
 import { Router } from 'express';
-import Client from '../../index';
+import Axios from 'axios';
+import Mongo from '../../database/mongo/mongo';
+import SQL from '../../database/sql/sql';
 
 const routes = Router();
 
+let DB: Mongo | SQL;
+if (process.env.DB && process.env.DB === 'MONGO')
+	DB = Mongo.getDatabase();
+else
+	DB = SQL.getDatabase();
+
 routes.get('/:id', async (req, res) => {
-	const data = await Client.db.getLogs(req.params.id);
+	const data = await DB.getLogs(req.params.id);
 	if (!data) return res.send('Invalid ID');
+
+	const me = await (await Axios.get('https://discord.com/api/users/@me', {
+		headers: {
+			Authorization: `Bot ${process.env.BOT_TOKEN}`
+		}
+	})).data;
+
+	const avatar = me.avatar ?
+		`https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png` :
+		`https://cdn.discordapp.com/embed/avatars/${parseInt(me.discriminator) % 5}.png`;
 
 	const messages: string[] = [];
 	const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 	for (const msg of data.messages) {
 		// Message author
-		const author = Client.bot.users.get(msg.userID) || await Client.utils.discord.fetchUser(msg.userID);
+		const author = (await Axios.get(`https://discord.com/api/users/${msg.userID}`, {
+			headers: {
+				Authorization: `Bot ${process.env.BOT_TOKEN}`
+			}
+		})).data;
+
 		const date = new Date(msg.date);
 
 		messages.push(`
@@ -39,7 +62,7 @@ routes.get('/:id', async (req, res) => {
   	<title>ModMail Logs</title>
   	<meta charset="UTF-8">
   	<meta name="description" content="Log from .">
-  	<link rel="icon" href=${Client.bot.user.dynamicAvatarURL()} type="image/icon type">
+  	<link rel="icon" href="${avatar}" type="image/icon type">
   	<style>
         body {
             margin: 0;
@@ -153,7 +176,7 @@ routes.get('/:id', async (req, res) => {
 		<div class="topnav">
 
         <div class="topnav-title">
-            <img src="${Client.bot.user.dynamicAvatarURL()}" style="float: left; width: 63px; height: 63px">
+            <img src="${avatar}" style="float: left; width: 63px; height: 63px">
             <p>Thread Logs</p>
         </div>
 

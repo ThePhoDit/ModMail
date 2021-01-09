@@ -5,7 +5,7 @@ const server = express();
 server.use('/', routes);
 
 export default (): void => {
-	server.listen(process.env.LOGS_PORT, () => {
+	server.listen(process.env.PORT || 3000, () => {
 		console.log('Server ready!');
 	});
 };

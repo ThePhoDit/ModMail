@@ -23,13 +23,35 @@ const user = new Schema({
 		default: 0
 	},
 	logs: {
+		type: String,
+		default: '0'
+	}
+});
+
+const log = new Schema({
+	user: {
+		type: String,
+		required: true,
+		index: true
+	},
+	channel: {
+		type: String,
+		required: true
+	},
+	timestamp: {
+		type: Number,
+		required: true,
+		default: Date.now()
+	},
+	messages: {
 		type: [{
 			userID: String,
 			location: String,
 			content: String,
+			date: Date,
 			images: [String]
 		}],
-		default: []
+		required: true
 	}
 });
 
@@ -51,8 +73,10 @@ const snippet = new Schema({
 
 const User = model('user', user, 'users');
 const Snippet = model('Snippet', snippet, 'snippets');
+const Log = model('log', log, 'logs');
 
 export {
 	User,
-	Snippet
+	Snippet,
+	Log
 };

@@ -25,7 +25,8 @@
   "scripts": {
     "setup": "npm install && echo \"Please, setup the file src/config.ts before continuing.\"",
     "start": "tsc || echo Done && node prod/index.js",
-    "build": "tsc || echo Done"
+    "build": "tsc || echo Done",
+    "web": "tsc || echo Done && node prod/server/index.js"
   },
   "repository": {
     "type": "git",

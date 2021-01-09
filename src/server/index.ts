@@ -1,10 +1,12 @@
 import express from 'express';
 import routes from './routes/index';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const server = express();
 server.use('/', routes);
 
-export default function start (): void {
+export function start (): void {
 	server.listen(process.env.PORT || 3000, () => {
 		console.log('Server ready!');
 	});

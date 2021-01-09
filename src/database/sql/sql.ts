@@ -1,4 +1,4 @@
-import {UserDB, SnippetDB, MessageLog} from '../../lib/types/Database';
+import {UserDB, SnippetDB, LogDB, MessageLog} from '../../lib/types/Database';
 import { IDatabase } from '../IDatabase';
 
 export default class SQL implements IDatabase {
@@ -9,16 +9,11 @@ export default class SQL implements IDatabase {
 	private constructor() {
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		this.DB = require('better-sqlite3')('modmail.db');
-		this.DB.prepare('CREATE TABLE IF NOT EXISTS users (user TEXT NOT NULL PRIMARY KEY, channel TEXT NOT NULL DEFAULT \'0\', threads INTEGER NOT NULL DEFAULT 0, blacklisted INTEGER NOT NULL DEFAULT 0, logs TEXT NOT NULL DEFAULT \'[]\')').run();
+		this.DB.prepare('CREATE TABLE IF NOT EXISTS users (user TEXT NOT NULL PRIMARY KEY, channel TEXT NOT NULL DEFAULT \'0\', threads INTEGER NOT NULL DEFAULT 0, blacklisted INTEGER NOT NULL DEFAULT 0, logs TEXT DEFAULT \'0\')').run();
 		this.DB.prepare('CREATE INDEX IF NOT EXISTS channel_index ON users (channel)').run();
 		this.DB.prepare('CREATE TABLE IF NOT EXISTS snippets (name TEXT NOT NULL PRIMARY KEY, creator TEXT NOT NULL, content TEXT NOT NULL)').run();
-		// Changes that have been applied after bot creation.
-		try {
-			this.DB.prepare('ALTER TABLE users ADD COLUMN logs TEXT DEFAULT \'[]\'').run();
-		}
-		catch (e) {
-			console.log(e);
-		}
+		this.DB.prepare('CREATE TABLE IF NOT EXISTS logs (id TEXT NOT NULL PRIMARY KEY, user TEXT NOT NULL, channel TEXT NOT NULL, timestamp TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, messages TEXT NOT NULL)').run();
+		this.DB.prepare('CREATE INDEX IF NOT EXISTS log_user_index ON logs (user)').run();
 	}
 
 	static getDatabase(): SQL {
@@ -42,7 +37,9 @@ export default class SQL implements IDatabase {
 		if (!data)
 			await this.addUser(userID);
 
-		this.DB.prepare('UPDATE users SET channel = ? WHERE user = ?').run(channelID, userID);
+		const logID = `t${Date.now()}c${channelID}`;
+		this.DB.prepare('UPDATE users SET channel = ?, logs = ? WHERE user = ?').run(channelID, logID, userID);
+		this.DB.prepare('INSERT INTO logs (id, user, channel, messages) VALUES (?, ?, ?, ?)').run(logID, userID, channelID, '[]');
 	}
 
 	async getSnippet(name: string): Promise<SnippetDB | null> {
@@ -50,10 +47,8 @@ export default class SQL implements IDatabase {
 		return data ? data : null;
 	}
 
-	async closeChannel(id: string): Promise<MessageLog[]> {
-		const data = await this.DB.prepare('SELECT logs FROM users WHERE channel = ?').get(id);
-		this.DB.prepare('UPDATE users SET channel = \'0\', threads = threads + 1, logs = \'[]\' WHERE channel = ?').run(id);
-		return JSON.parse(data.logs);
+	closeChannel(id: string): void {
+		this.DB.prepare('UPDATE users SET channel = \'0\', threads = threads + 1, logs = null WHERE channel = ?').run(id);
 	}
 
 	updateBlacklist(userID: string, action: 'add' | 'remove'): void {
@@ -72,11 +67,24 @@ export default class SQL implements IDatabase {
 		return await this.DB.prepare('SELECT * FROM snippets').all() as SnippetDB[];
 	}
 
-	async addMessage(userID: string, location: 'USER' | 'ADMIN' | 'OOT', content: string, channelID: string, images: string[] | undefined = undefined): Promise<void> {
-		const result = await this.DB.prepare('SELECT logs FROM users WHERE channel = ?').get(channelID);
-		const array = JSON.parse(result.logs);
-		array.push({userID, location, content, images });
-		this.DB.prepare('UPDATE users SET logs = ? WHERE channel = ?').run(JSON.stringify(array), channelID);
+	async addMessage(userID: string, location: 'USER' | 'OOT' | 'ADMIN', content: string, logID: string, images: string[] | undefined = undefined): Promise<void> {
+		const result = await this.DB.prepare('SELECT messages FROM logs WHERE id = ?').get(logID);
+		const array = JSON.parse(result.messages) as MessageLog[];
+		array.push({userID, location, content, date: new Date(), images });
+		this.DB.prepare('UPDATE logs SET messages = ? WHERE id = ?').run(JSON.stringify(array), logID);
+	}
 
+	async getLogs(logID: string): Promise<LogDB | null> {
+		const data = await this.DB.prepare('SELECT channel, messages FROM logs WHERE id = ?').get(logID);
+		if (!data) return null;
+		data.messages = JSON.parse(data.messages);
+		return data;
+	}
+	async getUserLogs(userID: string): Promise<string[] | null> {
+		const data = await this.DB.prepare('SELECT id, timestamp FROM logs WHERE user = ?').all(userID);
+		if (!data || data.length === 0) return null;
+		return data
+			.sort((a: { timestamp: string }, b: { timestamp: string }) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+			.map((r: { id: string }) => `${process.env.LOGS_URL}/logs/${r.id}`);
 	}
 }

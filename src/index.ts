@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { keepAlive } from './server';
+import start from './server/index';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Monitor = require('ping-monitor');
 dotenv.config();
@@ -7,7 +7,6 @@ if (!process.env.BOT_TOKEN) throw new Error('[Bot Start] No token found.');
 
 if (process.env.HOST && process.env.HOST == 'REPLIT') {
 	if (!process.env.URL) throw new Error('[REPL.IT] Provide an URL.');
-	keepAlive();
 	const monitor = new Monitor({
 		website: process.env.URL,
 		title: 'ModMail',
@@ -25,3 +24,6 @@ const Client = new Caller(process.env.BOT_TOKEN);
 
 
 Client.login();
+start();
+
+export default Client;

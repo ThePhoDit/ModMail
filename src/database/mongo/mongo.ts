@@ -1,7 +1,7 @@
-import { UserDB, SnippetDB, MessageLog } from '../../lib/types/Database';
+import { UserDB, SnippetDB, LogDB } from '../../lib/types/Database';
 import { IDatabase } from '../IDatabase';
-import { connect, set } from 'mongoose';
-import { User, Snippet } from './Schemas';
+import {connect, Document, set, Types} from 'mongoose';
+import { User, Snippet, Log } from './Schemas';
 
 if (process.env.DB === 'MONGO' && !process.env.MONGO_URI) throw new Error('[MONGO DB] No URI provided.');
 set('useFindAndModify', false);
@@ -44,7 +44,14 @@ export default class Mongo implements IDatabase {
 		if (!data)
 			await this.addUser(userID);
 
-		User.findOneAndUpdate({ user: userID }, { channel: channelID }).exec();
+		const log = await Log.create({
+			// @ts-ignore
+			user: userID,
+			channel: channelID,
+			messages: []
+		});
+
+		await User.findOneAndUpdate({ user: userID }, { channel: channelID, logs: log.id}).exec();
 	}
 
 	async getSnippet(name: string): Promise<SnippetDB | null> {
@@ -52,8 +59,8 @@ export default class Mongo implements IDatabase {
 		return data ? data as SnippetDB : null;
 	}
 
-	async closeChannel(id: string): Promise<MessageLog[]> {
-		const user = await User.findOneAndUpdate(
+	closeChannel(id: string): void {
+		User.findOneAndUpdate(
 			{
 				channel: id
 			},
@@ -62,10 +69,8 @@ export default class Mongo implements IDatabase {
 				$inc: {
 					threads: 1
 				},
-				logs: []
-			}).lean();
-
-		return (user as UserDB).logs;
+				logs: '0'
+			}).exec();
 	}
 
 	updateBlacklist(userID: string, action: 'add' | 'remove'): void {
@@ -96,16 +101,27 @@ export default class Mongo implements IDatabase {
 		return await Snippet.find({}).lean() as SnippetDB[];
 	}
 
-	async addMessage(userID: string, location: 'USER' | 'ADMIN' | 'OOT', content: string, channelID: string, images: string[] | undefined = undefined): Promise<void> {
-		User.findOneAndUpdate(
-			{
-				channel: channelID
-			},
+	async addMessage(userID: string, location: 'USER' | 'ADMIN' | 'OOT', content: string, logID: string, images: string[] | undefined = undefined): Promise<void> {
+		Log.findByIdAndUpdate(
+			logID,
 			{
 				$push: {
-					logs: { userID, location, content, images }
+					messages: { userID, location, content, date: new Date(), images }
 				}
 			}
 		).exec();
+	}
+
+	async getLogs(logID: string): Promise<LogDB | null> {
+		if (!Types.ObjectId.isValid(logID)) return null;
+		return await Log.findById(logID).lean() as LogDB;
+	}
+
+	async getUserLogs(userID:string): Promise<string[] | null> {
+		const data = await Log.find({ user: userID }).exec() as (Document<unknown> & LogDB)[];
+		if (!data || data.length === 0) return null;
+		return data
+			.sort((a, b) => a.timestamp - b.timestamp)
+			.map((r) => `${process.env.LOGS_URL}/logs/${r.id}`);
 	}
 }

@@ -76,7 +76,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 			(channel as TextChannel).createMessage({ content: config.role_ping ? `<@&${config.role_ping}>` : '', embed: guildOpenEmbed.code }, files);
 		}
 		// Add log to the DB.
-		caller.db.addMessage(msg.author.id, 'USER', msg.content, userDB.channel, files.length > 0 ? msg.attachments.map((a) => a.url) : undefined);
+		caller.db.addMessage(msg.author.id, 'USER', msg.content, userDB.logs, files.length > 0 ? msg.attachments.map((a) => a.url) : undefined);
 	}
 
 	// Out of DMs section.
@@ -85,7 +85,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 
 	userDB = await caller.db.getUser(msg.channel.id, true);
 	if (userDB && !(msg.content.startsWith(`${prefix}reply`) || msg.content.startsWith(`${prefix}r`)))
-		caller.db.addMessage(msg.author.id, 'OOT', msg.content, userDB.channel);
+		caller.db.addMessage(msg.author.id, 'OOT', msg.content, userDB.logs);
 
 	if (!msg.content.startsWith(prefix)) return;
 
@@ -117,7 +117,7 @@ export default async (caller: Caller, msg: Message): Promise<unknown> => {
 		caller.utils.discord.createMessage(userDB.user, { embed: userEmbed.code }, true);
 
 		// Add log to the DB.
-		caller.db.addMessage(msg.author.id, 'ADMIN', snippet.content, userDB.channel);
+		caller.db.addMessage(msg.author.id, 'ADMIN', snippet.content, userDB.logs);
 		return;
 	}
 	else if (!cmd) return;

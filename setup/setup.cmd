@@ -17,6 +17,14 @@ if %db%==MONGO (
     echo MONGO_URI=%mongo_uri% >> ../.env
 )
 
+echo Please, indicate what port do you want your logs to run (for example: 3000).
+set /p port=""
+echo PORT=%port% >> ../.env
+
+echo Please, indicate what your base URL is including the port (for example: http://localhost:3000).
+set /p logs_url=""
+echo LOGS_URL=%logs_url% >> ../.env
+
 copy config.ts.example ..\src\config.ts
 
 echo Done. Installing dependencies... Please, fill in the configuration file as specified in the documentation and run the command "npm run start" once the installation has finished.

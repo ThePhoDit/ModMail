@@ -13,9 +13,17 @@ if [ "$DB" == "MONGO" ]; then
   read MONGO_URI
 fi
 
+echo "Please, indicate what port do you want your logs to run (for example: 3000)."
+read PORT
+
+echo "Please, indicate what your base URL is including the port (for example: http://localhost:3000)"
+read LOGS_URL
+
 echo "BOT_TOKEN=$BOT_TOKEN
 DB=$DB
-MONGO_URI=$MONGO_URI" > ../.env
+MONGO_URI=$MONGO_URI
+PORT=$PORT
+LOGS_URL=$LOGS_URL" > ../.env
 
 cp config.ts.example ../src/config.ts
 

@@ -165,6 +165,6 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		await cmd.run(caller, { msg, args, channel, category }, log, config);
 	}
 	catch (e) {
-		console.error(e);
+		caller.logger.error(e);
 	}
 };

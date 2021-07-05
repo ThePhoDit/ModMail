@@ -18,6 +18,6 @@ export interface IDatabase {
 	closeLog(log: LogDocument, msg: Message): Promise<boolean>;
 	updateLog(logID: string, key: string, value: string | number | boolean | Date | IMessage | IUser, operation: 'SET' | 'PUSH' | 'PULL'): Promise<boolean> | false;
 	deleteLog(logID: string): Promise<boolean>;
-	getUserLogs(userID: string): Promise<ILog[] | null>;
+	getUserLogs(userID: string): Promise<LogDocument[] | null>;
 	numberOfPreviousLogs(userID: string): Promise<number>;
 }

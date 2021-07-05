@@ -1,9 +1,9 @@
-import Caller from '../structures/Caller';
+import Mail from '../structures/Mail';
 import DiscordUtils from './Discord';
 
 class UtilsManager {
 	discord: DiscordUtils;
-	constructor(caller: Caller) {
+	constructor(caller: Mail) {
 		this.discord = new DiscordUtils(caller);
 	}
 }

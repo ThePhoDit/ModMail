@@ -1,36 +1,90 @@
-interface UserDB {
-	user: string;
-	channel: string;
-	threads: number;
-	blacklisted: 0 | 1;
-	logs: string;
-}
+import {Document} from "mongoose";
 
-interface SnippetDB {
-	name: string;
-	creator: string;
-	content: string;
-}
-
-interface LogDB {
+interface IUser {
 	id: string;
-	user: string;
-	channel: string;
-	timestamp: number;
-	messages: MessageLog[];
+	username: string;
+	discriminator: string;
+	avatarURL: string;
 }
 
-interface MessageLog {
-	userID: string;
-	location: 'USER' | 'ADMIN' | 'OOT';
+interface IMessage {
+	timestamp: Date;
+	id: string;
+	type: 'INTERNAL' | 'STAFF_REPLY' | 'RECIPIENT_REPLY',
+	author: IUser;
 	content: string;
-	date: Date;
-	images?: string[];
+	attachments: string[];
 }
+
+interface ISnippet {
+	content: string;
+	creatorID: string;
+	createdAt: Date;
+}
+
+interface ILog {
+	open: boolean;
+	botID: string;
+	guildID: string;
+	channelID: string;
+	createdAt: Date;
+	closedAt?: Date;
+	recipient: IUser;
+	creator: IUser;
+	closer?: IUser;
+	messages: IMessage[];
+	nsfw: boolean;
+	title?: string;
+	note?: string;
+	subscriptions: string[];
+}
+
+interface IEmbed {
+	title: string;
+	description: string;
+	footer: string;
+	footerImageURL?: string;
+	color: string;
+}
+
+interface IStaffEmbed {
+	title: string;
+	color: string;
+}
+
+interface IConfig {
+	botID: string;
+	prefix: string;
+	mainCategoryID: string;
+	logsChannelID?: string;
+	status?: string;
+	blacklist: string[];
+	levelPermissions?: {
+		REGULAR?: string[];
+		SUPPORT?: string[];
+		ADMIN?: string[];
+	};
+	commandsPermissions?: Record<string, string[]>;
+	aliases?: Record<string, string>;
+	notificationRole?: string;
+	embeds: {
+		creation: IEmbed;
+		closure: IEmbed;
+		staff: IStaffEmbed;
+	};
+	snippets: Record<string, ISnippet>;
+	expirationDate?: number;
+}
+
+type ConfigDocument = IConfig & Document;
+type LogDocument = ILog & Document;
 
 export {
-	UserDB,
-	SnippetDB,
-	LogDB,
-	MessageLog
+	ILog,
+	IConfig,
+	ISnippet,
+	IMessage,
+	IUser,
+	ConfigDocument,
+	LogDocument
 };

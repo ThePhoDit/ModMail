@@ -1,21 +1,30 @@
 import Command from '../lib/structures/Command';
 import MessageEmbed from '../lib/structures/MessageEmbed';
-import config from '../config';
-import { COLORS } from '../Constants';
 
-export default new Command('close', async (caller, cmd, userDB) => {
+export default new Command('close', async (caller, cmd, log, config) => {
 	const channel = await cmd.channel.delete('Thread Closed').catch(() => false);
 	if (channel === false) return caller.utils.discord.createMessage(cmd.channel.id, 'There has been an error closing the channel.');
-	const embed = new MessageEmbed()
-		.setTitle(config.messages.thread_close_title || 'Thread Closed')
-		.setColor(COLORS.RED)
-		.setDescription(config.messages.thread_close_main || 'Send a message to open a new thread.')
-		.setFooter(config.messages.thread_close_footer || 'Please do not abuse of this system.')
+
+	const endingEmbed = new MessageEmbed()
+		.setTitle(config.embeds.closure.title)
+		.setColor(config.embeds.closure.color)
+		.setDescription(config.embeds.closure.description)
+		.setFooter(config.embeds.closure.footer, config.embeds.closure.footerImageURL)
 		.setTimestamp();
-	caller.utils.discord.createMessage(userDB!.user, { embed: embed.code }, true);
+	caller.utils.discord.createMessage(log!.recipient.id, { embed: endingEmbed.code }, true);
+
+	if (config.logsChannelID) {
+		const logEmbed = new MessageEmbed()
+			.setTitle('Thread Closed')
+			.setColor('#FF0000')
+			.setDescription(`The thread \`${cmd.channel.name}\` has been closed by ${cmd.msg.author.username}.\n${process.env.LOGS_URL}/logs/${log!._id}`);
+		caller.utils.discord.createMessage(config.logsChannelID, {embed: logEmbed.code});
+	}
+
+	caller.db.closeLog(log!, cmd.msg);
 },
 {
-	level: 'HELPER',
+	level: 'SUPPORT',
 	threadOnly: true,
 	aliases: ['c']
 });

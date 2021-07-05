@@ -4,7 +4,6 @@ import { connect, Document, set, _FilterQuery, _AllowStringsForIds } from 'mongo
 import { Config, Log } from './Schemas';
 import { Message } from 'eris';
 import Mail from '../lib/structures/Mail';
-import {log} from "util";
 
 if (!process.env.MONGO_URI) throw new Error('[MONGO DB] No URI provided.');
 set('useFindAndModify', false);
@@ -145,17 +144,17 @@ export default class Mongo implements IDatabase {
 		return await Log.findOne({
 			filter
 		})
-			.then((data) => data as LogDocument)
+			.then((data: LogDocument) => data as LogDocument)
 			.catch(() => null);
 	}
 
-	async getUserLogs(userID: string): Promise<ILog[] | null> {
+	async getUserLogs(userID: string): Promise<LogDocument[] | null> {
 		return await Log.find({
 			'recipient.id': userID
 		})
-			.then((data) => {
+			.then((data: LogDocument[]) => {
 				if (data.length === 0) return null;
-				return data as (ILog & Document)[];
+				return data as LogDocument[];
 			} )
 			.catch(() => null);
 	}

@@ -21,7 +21,11 @@ export default new Command('close', async (caller, cmd, log, config) => {
 		caller.utils.discord.createMessage(config.logsChannelID, {embed: logEmbed.code});
 	}
 
-	caller.db.closeLog(log!, cmd.msg);
+	caller.db.closeLog(log!, cmd.msg)
+		.catch((error) => {
+			caller.utils.discord.createMessage(cmd.channel.id, `There has been an error closing ${cmd.channel.name} in the DB.`);
+			caller.logger.error(error);
+		});
 },
 {
 	level: 'SUPPORT',

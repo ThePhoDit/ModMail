@@ -1,29 +1,19 @@
-import config from '../../config';
 import { Client } from 'eris';
 import { EventEmitter } from 'events';
 import UtilsManager from '../utils/index';
 import { readdir } from 'fs';
 import { join } from 'path';
 import Command from './Command';
-import Mongo from '../../database/mongo/mongo';
-import SQL from '../../database/sql/sql';
+import Mongo from '../../database/Mongo';
+import Logger from './Logger';
 
-let DB: Mongo | SQL;
-if (process.env.DB && process.env.DB === 'MONGO')
-	DB = Mongo.getDatabase();
-else
-	DB = SQL.getDatabase();
-
-class Caller extends EventEmitter {
+class Mail extends EventEmitter {
 	bot: Client;
 	commands: Map<string, Command>
 	aliases: Map<string, string>
-	managers: string[];
-	helpers: string[];
-	category: string;
-	logsChannel: string;
 	utils = new UtilsManager(this);
-	db: typeof DB
+	db = Mongo.getDatabase(this);
+	logger = new Logger();
 	constructor(private readonly token: string) {
 		super();
 		this.token = token;
@@ -42,13 +32,9 @@ class Caller extends EventEmitter {
 		this.commands = new Map<string, Command>();
 		this.aliases = new Map<string, string>();
 
-		this.managers = config.bot_managers || [];
-		this.helpers = config.bot_helpers || [];
-		this.category = config.bot_category || '';
-		this.logsChannel = config.logs_channel || '';
-
 		this.utils = new UtilsManager(this);
-		this.db = DB;
+		this.db = Mongo.getDatabase(this);
+		this.logger = new Logger();
 
 		readdir(join(__dirname, '..', '..', 'events'), async (error, files) => {
 			if (error) return console.error(error);
@@ -109,4 +95,4 @@ class Caller extends EventEmitter {
 	}
 }
 
-export default Caller;
+export default Mail;

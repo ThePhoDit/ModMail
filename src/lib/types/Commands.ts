@@ -9,7 +9,7 @@ interface CommandData {
 
 interface CommandOptions {
 	aliases: string[];
-	level: 'MANAGER' | 'HELPER';
+	level: 'ADMIN' | 'SUPPORT' | 'REGULAR';
 	threadOnly: boolean;
 }
 

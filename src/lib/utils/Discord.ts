@@ -1,4 +1,4 @@
-import Caller from '../structures/Caller';
+import Mail from '../structures/Mail';
 import {
 	Message,
 	MessageContent,
@@ -8,12 +8,15 @@ import {
 	Constants,
 	CategoryChannel,
 	VoiceChannel,
-	CreateChannelOptions
+	CreateChannelOptions, Member
 } from 'eris';
+import { IConfig } from '../types/Database';
+import Command from '../structures/Command';
 
 class DiscordUtils {
-	private caller: Caller;
-	constructor(caller: Caller) {
+	private caller: Mail;
+
+	constructor(caller: Mail) {
 		this.caller = caller;
 	}
 
@@ -37,8 +40,7 @@ class DiscordUtils {
 				console.error(`[Messages Manager] Could not send a message to user ${channel} (${usr.username}).`);
 				return false;
 			}
-		}
-		else {
+		} else {
 			const chnl = this.caller.bot.getChannel(channel);
 			if (!chnl) return false;
 
@@ -85,10 +87,65 @@ class DiscordUtils {
 				}) as CategoryChannel | TextChannel | VoiceChannel | undefined;
 			if (!channel) return false;
 			return channel;
-		}
-		catch (e) {
+		} catch (e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Check if someone has permissions to run a command.
+	 * @param {Member} member - A guild member.
+	 * @param {string} command - A command name.
+	 * @param {IConfig} config - The guild's config.
+	 * @return {boolean}
+	 */
+	checkPermissions(member: Member, command: string, config: IConfig): boolean {
+		let hasPerms = false;
+
+		let toCheck: ('ADMIN' | 'SUPPORT' | 'REGULAR')[];
+
+		if (command === 'snippet') toCheck = ['ADMIN', 'SUPPORT'];
+		else {
+			const cmd = this.caller.commands.get(command) as Command;
+			switch (cmd.options.level) {
+				case 'ADMIN':
+					toCheck = ['ADMIN'];
+					break;
+				case 'SUPPORT':
+					toCheck = ['ADMIN', 'SUPPORT'];
+					break;
+				case 'REGULAR':
+					toCheck = ['ADMIN', 'SUPPORT', 'REGULAR'];
+					break;
+			}
+		}
+
+		// Check through all permissions and roles.
+		for (const perm of toCheck) {
+			if (member.permission.has('administrator')) return true;
+
+			if (config.levelPermissions && config.levelPermissions[perm]) {
+				if (config.levelPermissions[perm]!.includes(member.user.id))
+					hasPerms = true;
+				for (const id of config.levelPermissions[perm]!) {
+					if (member.roles.includes(id))
+						hasPerms = true;
+					if (hasPerms) break;
+				}
+			}
+
+			// Individual Command level
+			if (config.commandsPermissions && config.commandsPermissions[command]) {
+				if (config.commandsPermissions[command].includes(member.user.id))
+					hasPerms = true;
+				for (const id of config.commandsPermissions[command]) {
+					if (member.roles.includes(id))
+						hasPerms = true;
+					if (hasPerms) break;
+				}
+			}
+		}
+		return hasPerms;
 	}
 }
 

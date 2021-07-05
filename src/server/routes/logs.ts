@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import Axios from 'axios';
-import Mongo from '../../database/mongo/mongo';
+import Mongo from '../../database/Mongo';
 import SQL from '../../database/sql/sql';
 
 const routes = Router();

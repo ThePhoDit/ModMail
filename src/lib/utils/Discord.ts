@@ -37,7 +37,7 @@ class DiscordUtils {
 			try {
 				return await DM.createMessage(content, file ? file : undefined);
 			} catch (e) {
-				caller.logger.error(`[Messages Manager] Could not send a message to user ${channel} (${usr.username}).`);
+				console.error(`[Messages Manager] Could not send a message to user ${channel} (${usr.username}).`);
 				return false;
 			}
 		} else {
@@ -48,7 +48,7 @@ class DiscordUtils {
 			try {
 				return await chnl.createMessage(content, file ? file : undefined);
 			} catch (e) {
-				caller.logger.error(`[Messages Manager] Could not send a message to channel ${channel} (${chnl.name} -> ${chnl.guild.name})`);
+				console.error(`[Messages Manager] Could not send a message to channel ${channel} (${chnl.name} -> ${chnl.guild.name})`);
 				console.log('3 S');
 				return false;
 			}

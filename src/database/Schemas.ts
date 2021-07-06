@@ -109,84 +109,6 @@ const log = new Schema({
 	}
 });
 
-const permission = {
-	REGULAR: [String],
-	SUPPORT: [String],
-	ADMIN: [String]
-};
-
-const embed = {
-	creation: {
-		title: {
-			type: String,
-			required: true,
-			default: 'Thread Opened',
-			maxlength: 256
-		},
-		description: {
-			type: String,
-			required: true,
-			default: 'Thank you for contacting the support team, we will reply to you as soon as possible.',
-			maxlength: 2048
-		},
-		footer: {
-			type: String,
-			required: true,
-			default: 'Please be patient.',
-			maxlength: 2048
-		},
-		footerImageURL: {
-			type: String
-		},
-		color: {
-			type: String,
-			required: true,
-			default: COLORS.LIGHT_BLUE
-		}
-	},
-	closure: {
-		title: {
-			type: String,
-			required: true,
-			default: 'Thread Closed',
-			maxlength: 256
-		},
-		description: {
-			type: String,
-			required: true,
-			default: 'Send a message to open a new thread.',
-			maxlength: 2048
-		},
-		footer: {
-			type: String,
-			required: true,
-			default: 'Please do not abuse of this system.',
-			maxlength: 2048
-		},
-		footerImageURL: {
-			type: String
-		},
-		color: {
-			type: String,
-			required: true,
-			default: COLORS.RED
-		}
-	},
-	staff: {
-		title: {
-			type: String,
-			required: true,
-			default: 'New Thread',
-			maxlength: 256
-		},
-		color: {
-			type: String,
-			required: true,
-			default: COLORS.BLUE
-		}
-	}
-};
-
 const config = new Schema({
 	botID: {
 		type: String,
@@ -195,7 +117,7 @@ const config = new Schema({
 	prefix: {
 		type: String,
 		required: true,
-		default: '/',
+		default: '+',
 		maxlength: 4
 	},
 	mainCategoryID: {
@@ -214,27 +136,138 @@ const config = new Schema({
 		default: []
 	},
 	levelPermissions: {
-		type: permission
+		REGULAR: {
+			type: [String],
+			default: [],
+			required: true
+		},
+		SUPPORT: {
+			type: [String],
+			default: [],
+			required: true
+		},
+		ADMIN: {
+			type: [String],
+			default: [],
+			required: true
+		}
 	},
 	commandsPermissions: {
-		type: Schema.Types.Mixed
+		type: Schema.Types.Mixed,
+		required: true,
+		default: {}
 	},
 	aliases: {
-		type: Schema.Types.Mixed
+		type: Schema.Types.Mixed,
+		required: true,
+		default: {}
 	},
 	notificationRole: {
 		type: String
 	},
 	embeds: {
-		type: embed,
-		required: true,
-		default: embed
+		creation: {
+			title: {
+				type: String,
+				required: true,
+				default: 'Thread Opened',
+				maxlength: 256
+			},
+			description: {
+				type: String,
+				required: true,
+				default: 'Thank you for contacting the support team, we will reply to you as soon as possible.',
+				maxlength: 2048
+			},
+			footer: {
+				type: String,
+				required: true,
+				default: 'Please be patient.',
+				maxlength: 2048
+			},
+			footerImageURL: {
+				type: String
+			},
+			color: {
+				type: String,
+				required: true,
+				default: COLORS.LIGHT_BLUE
+			}
+		},
+		contact: {
+			title: {
+				type: String,
+				required: true,
+				default: 'Thread Opened',
+				maxlength: 256
+			},
+			description: {
+				type: String,
+				required: true,
+				default: 'A member from the staff team of the server has contacted you.',
+				maxlength: 2048
+			},
+			footer: {
+				type: String,
+				required: true,
+				default: 'You will receive a message soon.',
+				maxlength: 2048
+			},
+			footerImageURL: {
+				type: String
+			},
+			color: {
+				type: String,
+				required: true,
+				default: COLORS.YELLOW
+			}
+		},
+		closure: {
+			title: {
+				type: String,
+				required: true,
+				default: 'Thread Closed',
+				maxlength: 256
+			},
+			description: {
+				type: String,
+				required: true,
+				default: 'Send a message to open a new thread.',
+				maxlength: 2048
+			},
+			footer: {
+				type: String,
+				required: true,
+				default: 'Please do not abuse of this system.',
+				maxlength: 2048
+			},
+			footerImageURL: {
+				type: String
+			},
+			color: {
+				type: String,
+				required: true,
+				default: COLORS.RED
+			}
+		},
+		staff: {
+			title: {
+				type: String,
+				required: true,
+				default: 'New Thread',
+				maxlength: 256
+			},
+			color: {
+				type: String,
+				required: true,
+				default: COLORS.BLUE
+			}
+		}
 	},
 	snippets: {
-		type: Schema.Types.Mixed
-	},
-	expirationDate: {
-		type: Number
+		type: Schema.Types.Mixed,
+		required: true,
+		default: {}
 	}
 });
 

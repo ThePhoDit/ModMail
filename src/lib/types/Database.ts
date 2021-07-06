@@ -59,21 +59,21 @@ interface IConfig {
 	logsChannelID?: string;
 	status?: string;
 	blacklist: string[];
-	levelPermissions?: {
-		REGULAR?: string[];
-		SUPPORT?: string[];
-		ADMIN?: string[];
+	levelPermissions: {
+		REGULAR: string[];
+		SUPPORT: string[];
+		ADMIN: string[];
 	};
-	commandsPermissions?: Record<string, string[]>;
-	aliases?: Record<string, string>;
+	commandsPermissions: Record<string, string[]>;
+	aliases: Record<string, string>;
 	notificationRole?: string;
 	embeds: {
 		creation: IEmbed;
+		contact: IEmbed
 		closure: IEmbed;
 		staff: IStaffEmbed;
 	};
 	snippets: Record<string, ISnippet>;
-	expirationDate?: number;
 }
 
 type ConfigDocument = IConfig & Document;

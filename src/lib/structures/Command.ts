@@ -12,7 +12,7 @@ class Command {
 		this.run = run;
 		this.options = Object.assign({
 			aliases: [],
-			level: 'MANAGER',
+			level: 'ADMIN',
 			threadOnly: false
 		}, options);
 	}

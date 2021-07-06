@@ -14,6 +14,6 @@ export default class Logger {
 	}
 
 	error(message: string): void {
-		console.log(chalk.white.bgRed(message));
+		console.log(chalk.white(message));
 	}
 }

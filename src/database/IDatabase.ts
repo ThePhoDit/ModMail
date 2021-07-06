@@ -3,7 +3,7 @@ import { Message } from 'eris';
 
 export interface IDatabase {
 	// Configs collection
-	createConfig(data: Partial<IConfig>, guildID: string): Promise<IConfig | null>;
+	createConfig(data: Partial<IConfig>): Promise<IConfig | null>;
 	getConfig(): Promise<IConfig | null>;
 	updateConfig(key: string, value: string | number | boolean , operation: 'SET' | 'PUSH' | 'PULL'): Promise<boolean> | false;
 	deleteConfig(): Promise<boolean>;

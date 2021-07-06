@@ -17,10 +17,11 @@ export default class Mongo implements IDatabase {
 	private constructor(caller: Mail) {
 		this.caller = caller;
 		this.DB = connect(process.env.MONGO_URI!, {
-			useUnifiedTopology: true
+			useUnifiedTopology: true,
+			useNewUrlParser: true
 		})
-			.then(() => this.caller.logger.info('[DATABASE] Connection established.'))
-			.catch((err) => this.caller.logger.error(`[DATABASE] Connection error:\n ${err}`));
+			.then(() => console.log('[DATABASE] Connection established.'))
+			.catch((err) => console.error(`[DATABASE] Connection error:\n ${err}`));
 	}
 
 	static getDatabase(caller: Mail): Mongo {
@@ -30,17 +31,12 @@ export default class Mongo implements IDatabase {
 	}
 
 	// Config
-	async createConfig(data: Partial<IConfig>, guildID: string): Promise<IConfig | null> {
+	async createConfig(data: Partial<IConfig>): Promise<IConfig | null> {
 		if (await this.getConfig()) return null;
 
-		return Config.create({
-			// @ts-ignore
-			botID: this.caller.bot.user.id,
-			mainCategoryID: data.mainCategoryID,
-			levelPermissions: {
-				REGULAR: [guildID]
-			}
-		})
+		data.botID = this.caller.bot.user.id;
+
+		return Config.create(data)
 			.then((data) => data as ConfigDocument)
 			.catch(() => null);
 	}
@@ -118,13 +114,10 @@ export default class Mongo implements IDatabase {
 	}
 
 	// Logs
-	createLog(data: Partial<ILog>): Promise<LogDocument | false> {
+	async createLog(data: Partial<ILog>): Promise<LogDocument | false> {
 		data.botID = this.caller.bot.user.id;
 		data.guildID = process.env.MAIN_GUILD_ID!;
-		return Log.create({
-			// @ts-ignore
-			data
-		})
+		return await Log.create(data)
 			.then((data) => data as LogDocument)
 			.catch(() => false);
 	}
@@ -135,15 +128,13 @@ export default class Mongo implements IDatabase {
 		if (type === 'ID')
 			filter._id = id;
 		else if (type === 'USER')
-			filter.recipient.id = id;
+			filter['recipient.id'] = id;
 		else
 			filter.channelID = id;
 
 		filter.open = open;
 
-		return await Log.findOne({
-			filter
-		})
+		return await Log.findOne(filter)
 			.then((data: LogDocument) => data as LogDocument)
 			.catch(() => null);
 	}

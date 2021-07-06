@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 if (!process.env.BOT_TOKEN) throw new Error('[BOT] No token found.');
-if (!process.env.MAIN_GUILD_ID) throw new Error('[BOT] No token found.');
+if (!process.env.MAIN_GUILD_ID) throw new Error('[BOT] No main guild ID found.');
 
 // Import and initialize the client.
 import Mail from './lib/structures/Mail';

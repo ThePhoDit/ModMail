@@ -21,6 +21,11 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 \`embed_creation_color\`: the color (hex code) of the embed sent to the user when the thread is opened.
 \`embed_creation_footer_text\`: the footer of the embed sent to the user when the thread is opened.
 \`embed_creation_footer_image\`: the footer image of the embed sent to the user when the thread is opened.
+\`embed_contact_title\`: the title of the embed sent to the user when the thread is created by a staff member.
+\`embed_contact_description\`: the description of the embed sent to the user when the thread is created by a staff member.
+\`embed_contact_color\`: the color (hex code) of the embed sent to the user when the thread is created by a staff member.
+\`embed_contact_footer_text\`: the footer of the embed sent to the user when the thread is created by a staff member.
+\`embed_contact_footer_image\`: the footer image of the embed sent to the user when the thread is created by a staff member.
 \`embed_closure_title\`: the title of the embed sent to the user when the thread is closed.
 \`embed_closure_description\`: the description of the embed sent to the user when the thread is closed.
 \`embed_closure_color\`: the color (hex code) of the embed sent to the user when the thread is closed.
@@ -150,6 +155,52 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 				return caller.utils.discord.createMessage(cmd.channel.id, 'Creation embed description updated.');
 			if (!updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The creation embed description could not be updated.');
+			break;
+
+		case 'embed_contact_title':
+			updated = await caller.db.updateConfig('embeds.contact.title', cmd.args.slice(1).join(' '));
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Contact embed title updated.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed title could not be updated.');
+			break;
+
+		case 'embed_contact_description':
+			updated = await caller.db.updateConfig('embeds.contact.description', cmd.args.slice(1).join(' '));
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Contact embed description updated.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed description could not be updated.');
+			break;
+
+		case 'embed_contact_color':
+			if (!(/^#[0-9A-F]{6}$/i.test(cmd.args[1])))
+				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to provide a valid hex color.');
+
+			updated = await caller.db.updateConfig('embeds.contact.color', cmd.args[1]);
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Contact embed color updated.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed color could not be updated.');
+			break;
+
+		case 'embed_contact_footer_text':
+			updated = await caller.db.updateConfig('embeds.contact.footer', cmd.args.slice(1).join(' '));
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Contact embed footer updated.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed footer could not be updated.');
+			break;
+
+		case 'embed_contact_footer_image':
+			if (!(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/gm.test(cmd.args[1])))
+				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to provide a valid link.');
+
+			updated = await caller.db.updateConfig('embeds.contact.footerImageURL', cmd.args[1]);
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Contact embed description updated.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed description could not be updated.');
 			break;
 
 		case 'embed_closure_title':

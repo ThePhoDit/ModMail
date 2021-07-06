@@ -1,13 +1,44 @@
 import Mail from '../lib/structures/Mail';
 import MessageEmbed from '../lib/structures/MessageEmbed';
 import Axios from 'axios';
-import { Message, MessageFile, TextChannel } from 'eris';
+import {CategoryChannel, Message, MessageFile, TextChannel} from 'eris';
 import { COLORS } from '../Constants';
 import { LogDocument } from '../lib/types/Database';
 
 export default async (caller: Mail, msg: Message): Promise<unknown> => {
 
-	const config = (await caller.db.getConfig())!;
+	let config = (await caller.db.getConfig());
+	// Setup command.
+	if (!config && msg.member?.permission.has('administrator') && msg.channel.type === 0 && msg.content === '+setup') {
+		const category: CategoryChannel | false = await caller.bot.createChannel(process.env.MAIN_GUILD_ID!, 'MODMAIL', 4, {
+			permissionOverwrites: [
+				{
+					id: process.env.MAIN_GUILD_ID!,
+					type: 'role',
+					allow: 0,
+					deny: 1024 // Read messages & View channel. This means only admins can see the category the first time.
+				}
+			]
+		})
+			.catch(() => false);
+		if (!category)
+			return caller.utils.discord.createMessage(msg.author.id, 'A category could not be created. Setup cancelled.');
+
+		config = await caller.db.createConfig({
+			mainCategoryID: category.id,
+			levelPermissions: {
+				ADMIN: msg.author.id === msg.channel.guild.ownerID ? [msg.author.id] : [msg.channel.guild.ownerID, msg.author.id],
+				SUPPORT: [],
+				REGULAR: [msg.channel.guild.id]
+			}
+		});
+		if (!config)
+			return caller.utils.discord.createMessage(msg.author.id, 'The config could not be added to the database. Setup cancelled.');
+
+		return caller.utils.discord.createMessage(msg.author.id, 'Server completely setup. A ModMail category has been created for you.');
+	}
+	else if (!config) return;
+
 	const category = caller.bot.getChannel(config.mainCategoryID);
 	// Check if the category exists.
 	if (!category || category.type !== 4) return;
@@ -20,6 +51,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		if (config.blacklist.includes(msg.author.id)) return;
 
 		log = await caller.db.getLog(msg.author.id, 'USER');
+		console.log(log);
 
 		// Checks for any images sent.
 		const files: MessageFile[] = [];
@@ -165,6 +197,6 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		await cmd.run(caller, { msg, args, channel, category }, log, config);
 	}
 	catch (e) {
-		caller.logger.error(e);
+		console.error(e);
 	}
 };

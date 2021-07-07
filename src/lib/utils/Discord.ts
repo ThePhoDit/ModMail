@@ -151,6 +151,22 @@ class DiscordUtils {
 		}
 		return hasPerms;
 	}
+
+	formatMentions(content: string): string {
+		return content
+			.replace(/<@!?([0-9]+)>/g, ((match, p1): string => {
+				const user = this.caller.bot.users.get(p1);
+				if (!user)
+					return match;
+				return `@${user.username}#${user.discriminator}`;
+			}))
+			.replace(/<#([0-9]+)>/g, ((match, p1): string => {
+				const channel = this.caller.bot.getChannel(p1);
+				if (!channel || channel.type === 1)
+					return match;
+				return `#${(channel as TextChannel).name}`;
+			}));
+	}
 }
 
 export default DiscordUtils;

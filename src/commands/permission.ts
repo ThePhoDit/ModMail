@@ -5,7 +5,7 @@ export default new Command('permission', async (caller, cmd, _log, config) => {
 	if (!cmd.args[0])
 		return caller.utils.discord.createMessage(cmd.channel.id, `Please, select the level o command name.\n\
 		Levels: **regular**, **support** and **admin**.\nUsage: ${config.prefix}permission {levelName/commandName} {add/remove} {role ID/user ID}`);
-	if (!cmd.args[1] || ['add', 'remove'].indexOf(cmd.args[1]) < 0)
+	if (!cmd.args[1] || ['add', 'remove', 'rmv'].indexOf(cmd.args[1]) < 0)
 		return caller.utils.discord.createMessage(cmd.channel.id, 'Please, select `add` or `remove`.');
 	if (!cmd.args[2])
 		return caller.utils.discord.createMessage(cmd.channel.id, 'Please, select a role or user ID.');
@@ -28,7 +28,7 @@ export default new Command('permission', async (caller, cmd, _log, config) => {
 			if (!command)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The specified command does not exist.');
 
-			if (config.commandsPermissions[cmd.args[0].toLowerCase()] && config.commandsPermissions[cmd.args[0].toLowerCase()].includes(cmd.args[2]))
+			if (config.commandsPermissions && config.commandsPermissions[cmd.args[0].toLowerCase()] && config.commandsPermissions[cmd.args[0].toLowerCase()].includes(cmd.args[2]))
 				return caller.utils.discord.createMessage(cmd.channel.id, 'That ID is already added to the specified permission.');
 
 			const updated = await caller.db.updateConfig(`commandsPermissions.${command.name}`, cmd.args[2], 'PUSH');
@@ -56,7 +56,7 @@ export default new Command('permission', async (caller, cmd, _log, config) => {
 			if (!command)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The specified command does not exist.');
 
-			if (!(config.commandsPermissions[cmd.args[0].toLowerCase()] || config.commandsPermissions[cmd.args[0].toLowerCase()].includes(cmd.args[2])))
+			if (!(config.commandsPermissions || config.commandsPermissions[cmd.args[0].toLowerCase()]) || !config.commandsPermissions[cmd.args[0].toLowerCase()].includes(cmd.args[2]))
 				return caller.utils.discord.createMessage(cmd.channel.id, 'That ID is not added to the specified permission.');
 
 			const updated = await caller.db.updateConfig(`commandsPermissions.${command.name}`, cmd.args[2], 'PULL');

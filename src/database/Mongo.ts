@@ -48,7 +48,7 @@ export default class Mongo implements IDatabase {
 			.lean() as IConfig | null;
 	}
 
-	updateConfig(key: string, value: string | number | boolean, operation: 'SET' | 'PUSH' | 'PULL' = 'SET'): Promise<boolean> | false {
+	updateConfig(key: string, value: string | number | boolean, operation: 'SET' | 'PUSH' | 'PULL' | 'UNSET' = 'SET'): Promise<boolean> | false {
 		const update: Record<string, unknown> = {};
 
 		if (operation === 'SET')
@@ -59,6 +59,10 @@ export default class Mongo implements IDatabase {
 			};
 		else if (operation === 'PULL')
 			update['$pull'] = {
+				[key]: value
+			};
+		else if (operation === 'UNSET')
+			update['$unset'] = {
 				[key]: value
 			};
 		else
@@ -98,19 +102,8 @@ export default class Mongo implements IDatabase {
 		return this.updateConfig(`snippets.${name}.content`, value);
 	}
 
-	deleteSnippet(name: string): Promise<boolean> {
-		return Config.updateOne(
-			{
-				botID: this.caller.bot.user.id
-			},
-			{
-				$unset: {
-					[`snippets.${name}`]: ''
-				}
-			}
-		)
-			.then(() => true)
-			.catch(() => false);
+	deleteSnippet(name: string): Promise<boolean> | false {
+		return this.updateConfig(`snippets.${name}`, '', 'UNSET');
 	}
 
 	// Logs
@@ -157,7 +150,7 @@ export default class Mongo implements IDatabase {
 		return logs.length;
 	}
 
-	updateLog(logID: string, key: string, value: string | number | boolean | Date | IMessage | IUser, operation: 'SET' | 'PUSH' | 'PULL' = 'SET'): Promise<boolean> | false {
+	updateLog(logID: string, key: string, value: string | number | boolean | Date | IMessage | IUser, operation: 'SET' | 'PUSH' | 'PULL' | 'UNSET' = 'SET'): Promise<boolean> | false {
 		const update: Record<string, unknown> = {};
 
 		if (operation === 'SET')
@@ -168,6 +161,10 @@ export default class Mongo implements IDatabase {
 			};
 		else if (operation === 'PULL')
 			update['$pull'] = {
+				[key]: value
+			};
+		else if (operation === 'UNSET')
+			update['$unset'] = {
 				[key]: value
 			};
 		else

@@ -27,7 +27,7 @@ export default new Command('reply', async (caller, cmd, log) => {
 	caller.utils.discord.createMessage(log!.recipient.id, { embed: userEmbed.code }, true, files);
 
 	// Add log to the DB.
-	caller.db.appendMessage(log!._id, cmd.msg, 'STAFF_REPLY');
+	caller.db.appendMessage(log!._id, cmd.msg, 'STAFF_REPLY', cmd.args.join(' '));
 },
 {
 	level: 'SUPPORT',

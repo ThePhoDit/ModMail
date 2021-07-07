@@ -22,7 +22,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		})
 			.catch(() => false);
 		if (!category)
-			return caller.utils.discord.createMessage(msg.author.id, 'A category could not be created. Setup cancelled.');
+			return caller.utils.discord.createMessage(msg.channel.id, 'A category could not be created. Setup cancelled.');
 
 		config = await caller.db.createConfig({
 			mainCategoryID: category.id,
@@ -33,9 +33,9 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			}
 		});
 		if (!config)
-			return caller.utils.discord.createMessage(msg.author.id, 'The config could not be added to the database. Setup cancelled.');
+			return caller.utils.discord.createMessage(msg.channel.id, 'The config could not be added to the database. Setup cancelled.');
 
-		return caller.utils.discord.createMessage(msg.author.id, 'Server completely setup. A ModMail category has been created for you.');
+		return caller.utils.discord.createMessage(msg.channel.id, 'Server completely setup. A ModMail category has been created for you.');
 	}
 	else if (!config) return;
 
@@ -51,7 +51,6 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		if (config.blacklist.includes(msg.author.id)) return;
 
 		log = await caller.db.getLog(msg.author.id, 'USER');
-		console.log(log);
 
 		// Checks for any images sent.
 		const files: MessageFile[] = [];
@@ -134,7 +133,10 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 				.setTimestamp();
 			if (files.length > 0) guildEmbed.addField('Files', `This message contains ${files.length} file${files.length > 1 ? 's' : ''}`);
 
-			caller.utils.discord.createMessage(channel.id, { embed: guildEmbed.code }, false, files);
+			// Look for subscribers
+			const content = log.subscriptions.map((userID) => `<@${userID}>`).join(' ');
+
+			caller.utils.discord.createMessage(channel.id, { content: content, embed: guildEmbed.code }, false, files);
 			msg.addReaction('✅').catch(() => false);
 		}
 		// Add message to the log.
@@ -164,10 +166,11 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		cmd = caller.commands.get(config.aliases[command]);
 
 	// If no command is found, try to look for a snippet.
-	const snippet = config.snippets[command];
-	if (!cmd && log && snippet && category.channels.has(msg.channel.id)) {
-		if (!caller.utils.discord.checkPermissions(msg.member!, 'snippets', config))
+	if (!cmd && log && config.snippets && config.snippets[command] && category.channels.has(msg.channel.id)) {
+		if (!caller.utils.discord.checkPermissions(msg.member!, 'snippet', config))
 			return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
+
+		const snippet = config.snippets[command];
 		const userEmbed = new MessageEmbed()
 			.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
 			.setColor(COLORS.RED)

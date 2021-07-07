@@ -75,7 +75,7 @@ class DiscordUtils {
 	 * @param {string} guildID - A Discord Guild ID.
 	 * @param {string} name - The channel name.
 	 * @param {'GUILD_TEXT'|'DM'|'GUILD_VOICE'|'GUILD_CATEGORY'} type - The Channel type.
-	 * @param {string} [parentID] - The Channel Parent ID.
+	 * @param {CreateChannelOptions} options - The Channel Parent ID.
 	 * @returns {Promise<Channel|boolean>} - A Discord Channel or false.
 	 */
 	async createChannel(guildID: string, name: string, type: 'GUILD_TEXT' | 'DM' | 'GUILD_VOICE' | 'GUILD_CATEGORY', options: CreateChannelOptions): Promise<CategoryChannel | TextChannel | VoiceChannel | false> {
@@ -122,10 +122,12 @@ class DiscordUtils {
 
 		// Check through all permissions and roles.
 		for (const perm of toCheck) {
-			if (member.permission.has('administrator')) return true;
+			if (member.permissions.has('administrator')) return true;
 
 			if (config.levelPermissions && config.levelPermissions[perm]) {
-				if (config.levelPermissions[perm]!.includes(member.user.id))
+				if (config.levelPermissions[perm].includes(member.guild.id))
+					hasPerms = true;
+				if (config.levelPermissions[perm].includes(member.user.id))
 					hasPerms = true;
 				for (const id of config.levelPermissions[perm]!) {
 					if (member.roles.includes(id))
@@ -136,6 +138,8 @@ class DiscordUtils {
 
 			// Individual Command level
 			if (config.commandsPermissions && config.commandsPermissions[command]) {
+				if (config.commandsPermissions[command].includes(member.guild.id))
+					hasPerms = true;
 				if (config.commandsPermissions[command].includes(member.user.id))
 					hasPerms = true;
 				for (const id of config.commandsPermissions[command]) {

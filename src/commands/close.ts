@@ -17,7 +17,7 @@ export default new Command('close', async (caller, cmd, log, config) => {
 		const logEmbed = new MessageEmbed()
 			.setTitle('Thread Closed')
 			.setColor('#FF0000')
-			.setDescription(`The thread \`${cmd.channel.name}\` has been closed by ${cmd.msg.author.username}.\n${process.env.LOGS_URL}/logs/${log!._id}`);
+			.setDescription(`The thread \`${cmd.channel.name}\` has been closed by ${cmd.msg.author.username}.\n${process.env.LOGS_URL}log?id=${log!._id}`);
 		caller.utils.discord.createMessage(config.logsChannelID, { embed: logEmbed.code });
 	}
 

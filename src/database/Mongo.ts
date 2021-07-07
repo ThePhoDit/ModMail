@@ -207,7 +207,7 @@ export default class Mongo implements IDatabase {
 				discriminator: msg.author.discriminator,
 				avatarURL: msg.author.dynamicAvatarURL()
 			},
-			content: content ? content : msg.content,
+			content: content ? this.caller.utils.discord.formatMentions(content) : this.caller.utils.discord.formatMentions(msg.content),
 			attachments: msg.attachments.length > 0 ? msg.attachments.map((a) => a.url) : []
 		};
 

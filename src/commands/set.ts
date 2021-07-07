@@ -79,11 +79,11 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 
 		case 'logs':
 			// eslint-disable-next-line no-case-declarations
-			const logsChannel = caller.bot.getChannel(cmd.msg.channelMentions[0]) || caller.bot.getChannel(cmd.args[1]);
-			if (!logsChannel || logsChannel.type !== 4)
+			const logsChannel = cmd.msg.channelMentions[0] ? caller.bot.getChannel(cmd.msg.channelMentions[0]) || caller.bot.getChannel(cmd.args[1]) : caller.bot.getChannel(cmd.args[1]);
+			if (!logsChannel || logsChannel.type !== 0)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to select a valid channel.');
 
-			updated = await caller.db.updateConfig('logsChannelID', cmd.args[1]);
+			updated = await caller.db.updateConfig('logsChannelID', logsChannel.id);
 			if (updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The channel where logs are sent has been changed.');
 			if (!updated)
@@ -104,7 +104,7 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 			break;
 
 		case 'notification':
-			updated = await caller.db.updateConfig('notificationRole', cmd.args[1]);
+			updated = await caller.db.updateConfig('notificationRole', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
 			if (updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The notification role has been updated.');
 			if (!updated)

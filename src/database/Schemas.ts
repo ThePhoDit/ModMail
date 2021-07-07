@@ -128,7 +128,8 @@ const config = new Schema({
 		type: String
 	},
 	status: {
-		type: String
+		type: String,
+		default: 'DM me for help.'
 	},
 	blacklist: {
 		type: [String],

@@ -5,7 +5,7 @@ export default new Command('snippet', async (caller, cmd, _log, config) => {
 	if (!cmd.args[0]) return caller.utils.discord.createMessage(cmd.channel.id, 'Select `create`, `edit`, `delete` or `list`.');
 	if (!cmd.args[1] && ['show', 'list'].indexOf(cmd.args[0]) < 0) return caller.utils.discord.createMessage(cmd.channel.id, 'Provide a snippet name.');
 
-	const snippet = config.snippets[cmd.args[1]];
+	const snippet = config.snippets ? config.snippets[cmd.args[1]] : undefined;
 
 	const list: string[] = [],
 		snippets: string[][] = [],
@@ -49,12 +49,12 @@ export default new Command('snippet', async (caller, cmd, _log, config) => {
 		case 'delete': case 'remove': case 'rmv':
 			if (!snippet)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'A snippet with this name does not exist.');
-			caller.db.deleteSnippet(cmd.args[1])
-				.then(() => caller.utils.discord.createMessage(cmd.channel.id, 'Snippet deleted.'))
-				.catch((error) => {
-					caller.utils.discord.createMessage(cmd.channel.id, 'There has been an error deleting the snippet.');
-					console.error(error);
-				});
+			// eslint-disable-next-line no-case-declarations
+			const updated = await caller.db.deleteSnippet(cmd.args[1]);
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Snippet deleted');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The snippet could not be deleted.');
 			break;
 
 		// Show all snippets

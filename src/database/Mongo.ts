@@ -126,6 +126,7 @@ export default class Mongo implements IDatabase {
 			filter.channelID = id;
 
 		filter.open = open;
+		filter.botID = this.caller.bot.user.id;
 
 		return await Log.findOne(filter)
 			.then((data: LogDocument) => data as LogDocument)
@@ -134,7 +135,21 @@ export default class Mongo implements IDatabase {
 
 	async getUserLogs(userID: string): Promise<LogDocument[] | null> {
 		return await Log.find({
-			'recipient.id': userID
+			'recipient.id': userID,
+			botID: this.caller.bot.user.id
+		})
+			.then((data: LogDocument[]) => {
+				if (data.length === 0) return null;
+				return data as LogDocument[];
+			} )
+			.catch(() => null);
+	}
+
+	async getClosingScheduledLogs(): Promise<LogDocument[] | null> {
+		return await Log.find({
+			botID: this.caller.bot.user.id,
+			open: true,
+			scheduledClosure: { $lte: new Date() }
 		})
 			.then((data: LogDocument[]) => {
 				if (data.length === 0) return null;
@@ -181,17 +196,23 @@ export default class Mongo implements IDatabase {
 			.catch(() => false);
 	}
 
-	closeLog(log: LogDocument, msg: Message): Promise<boolean> {
-		return Log.findByIdAndUpdate(log._id, {
+	closeLog(log: LogDocument, msg?: Message, closer?: LogDocument['closer']): Promise<boolean> {
+		// If there is a closer, it was scheduled.
+		const update = closer ? {
 			open: false,
-			closedAt: new Date(),
-			closer: {
-				id: msg.author.id,
-				username: msg.author.username,
-				discriminator: msg.author.discriminator,
-				avatarURL: msg.author.dynamicAvatarURL()
-			}
-		})
+			closedAt: new Date()
+		} :
+			{
+				open: false,
+				closedAt: new Date(),
+				closer: {
+					id: msg!.author.id,
+					username: msg!.author.username,
+					discriminator: msg!.author.discriminator,
+					avatarURL: msg!.author.dynamicAvatarURL()
+				}
+			};
+		return Log.findByIdAndUpdate(log._id, update)
 			.then (() => true)
 			.catch(() => false);
 	}

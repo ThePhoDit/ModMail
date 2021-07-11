@@ -5,18 +5,18 @@ import { readdir } from 'fs';
 import { join } from 'path';
 import Command from './Command';
 import Mongo from '../../database/Mongo';
-import Logger from './Logger';
 
 class Mail extends EventEmitter {
 	bot: Client;
+	closingThreads: boolean;
 	commands: Map<string, Command>
 	aliases: Map<string, string>
 	utils = new UtilsManager(this);
 	db = Mongo.getDatabase(this);
-	logger = new Logger();
 	constructor(private readonly token: string) {
 		super();
 		this.token = token;
+		this.closingThreads = false;
 		this.bot = new Client(this.token, {
 			disableEvents: {
 				TYPING_START: true
@@ -34,7 +34,6 @@ class Mail extends EventEmitter {
 
 		this.utils = new UtilsManager(this);
 		this.db = Mongo.getDatabase(this);
-		this.logger = new Logger();
 
 		readdir(join(__dirname, '..', '..', 'events'), async (error, files) => {
 			if (error) return console.error(error);
@@ -92,6 +91,10 @@ class Mail extends EventEmitter {
 	}
 	async login(): Promise<void> {
 		this.bot.connect();
+	}
+
+	closingThreadsFunc(status: boolean): void {
+		this.closingThreads = status;
 	}
 }
 

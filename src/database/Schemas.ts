@@ -75,6 +75,12 @@ const log = new Schema({
 	closedAt: {
 		type: Date
 	},
+	scheduledClosure: {
+		type: Date
+	},
+	closureMessage: {
+		type: String
+	},
 	recipient: {
 		type: user,
 		required: true
@@ -130,6 +136,12 @@ const config = new Schema({
 	status: {
 		type: String,
 		default: 'DM me for help.'
+	},
+	accountAge: {
+		type: Number
+	},
+	guildAge: {
+		type: Number
 	},
 	blacklist: {
 		type: [String],

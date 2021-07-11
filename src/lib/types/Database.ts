@@ -1,4 +1,4 @@
-import {Document} from "mongoose";
+import { Document } from 'mongoose';
 
 interface IUser {
 	id: string;
@@ -19,6 +19,7 @@ interface IMessage {
 interface ISnippet {
 	content: string;
 	creatorID: string;
+	anonymous: boolean;
 	createdAt: Date;
 }
 
@@ -29,6 +30,8 @@ interface ILog {
 	channelID: string;
 	createdAt: Date;
 	closedAt?: Date;
+	scheduledClosure?: Date;
+	closureMessage?: string;
 	recipient: IUser;
 	creator: IUser;
 	closer?: IUser;
@@ -58,6 +61,8 @@ interface IConfig {
 	mainCategoryID: string;
 	logsChannelID?: string;
 	status?: string;
+	accountAge?: number;
+	guildAge?: number;
 	blacklist: string[];
 	levelPermissions: {
 		REGULAR: string[];

@@ -5,7 +5,9 @@ export default new Command('snippet', async (caller, cmd, _log, config) => {
 	if (!cmd.args[0]) return caller.utils.discord.createMessage(cmd.channel.id, 'Select `create`, `edit`, `delete` or `list`.');
 	if (!cmd.args[1] && ['show', 'list'].indexOf(cmd.args[0]) < 0) return caller.utils.discord.createMessage(cmd.channel.id, 'Provide a snippet name.');
 
-	const snippet = config.snippets ? config.snippets[cmd.args[1]] : undefined;
+	const snippet = config.snippets ?
+		cmd.args[1].startsWith('anon_') ? config.snippets[cmd.args[1].slice(5)] : config.snippets[cmd.args[1]] :
+		undefined;
 
 	const list: string[] = [],
 		snippets: string[][] = [],
@@ -22,9 +24,10 @@ export default new Command('snippet', async (caller, cmd, _log, config) => {
 			if (snippet)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'A snippet with this name already exists.');
 
-			caller.db.createSnippet(cmd.args[1], {
+			caller.db.createSnippet(cmd.args[1].startsWith('anon_') ? cmd.args[1].slice(5) : cmd.args[1], {
 				content: cmd.args.slice(2).join(' '),
 				createdAt: new Date(),
+				anonymous: cmd.args[1].startsWith('anon_'),
 				creatorID: cmd.msg.author.id
 			})
 				.then(() => caller.utils.discord.createMessage(cmd.channel.id, 'Snippet created.'))

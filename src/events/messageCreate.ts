@@ -60,6 +60,15 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 
 		// If there is no current open log for this user.
 		if (!log) {
+			// Check for account and guild ages.
+			if (config.accountAge && config.accountAge > (Date.now() - msg.author.createdAt))
+				return caller.utils.discord.createMessage(msg.author.id, 'Your account is not old enough to contact the staff.', true);
+
+			const guildMember = category.guild.members.get(msg.author.id);
+			if (!guildMember)
+				return caller.utils.discord.createMessage(msg.author.id, 'Your account has not been in the server long enough to contact the staff.', true);
+			if (config.guildAge && config.guildAge > (Date.now() - guildMember.joinedAt))
+				return caller.utils.discord.createMessage(msg.author.id, 'Your account has not been in the server long enough to contact the staff.', true);
 			// Creates the channel on the main server.
 			const channel = await caller.utils.discord.createChannel(process.env.MAIN_GUILD_ID!, `${msg.author.username}-${msg.author.discriminator}`, 'GUILD_TEXT', {
 				parentID: category.id,
@@ -122,9 +131,9 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		}
 		// If there is a current thread.
 		else {
-			const channel = category.channels.get(log.channelID);
+			const channel = category.guild.channels.get(log.channelID);
 			if (!channel)
-				return caller.utils.discord.createMessage(msg.author.id, 'An error has occurred, I cannot find your current channel. PLease, contact an administrator.', true);
+				return caller.utils.discord.createMessage(msg.author.id, 'An error has occurred, I cannot find your current channel. Please, contact an administrator.', true);
 
 			const guildEmbed = new MessageEmbed()
 				.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
@@ -138,9 +147,21 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 
 			caller.utils.discord.createMessage(channel.id, { content: content, embed: guildEmbed.code }, false, files);
 			msg.addReaction('✅').catch(() => false);
+
+			// Remove schedules if any.
+			if (log.closureMessage) caller.db.updateLog(log._id, 'closureMessage', '', 'UNSET');
+			if (log.scheduledClosure) {
+				caller.db.updateLog(log._id, 'scheduledClosure', '', 'UNSET');
+				caller.db.updateLog(log._id, 'closer', '', 'UNSET');
+				const closureCancellationEmbed = new MessageEmbed()
+					.setTitle('Closure Cancelled')
+					.setDescription('This ticket will no longer be closed due to ticket activity.')
+					.setColor(COLORS.YELLOW);
+				caller.utils.discord.createMessage(channel.id, { embed: closureCancellationEmbed.code });
+			}
 		}
 		// Add message to the log.
-		caller.db.appendMessage((log as LogDocument)._id, msg, 'RECIPIENT_REPLY');
+		return caller.db.appendMessage((log as LogDocument)._id, msg, 'RECIPIENT_REPLY');
 	}
 
 	// -------------------------
@@ -167,18 +188,18 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 
 	// If no command is found, try to look for a snippet.
 	if (!cmd && log && config.snippets && config.snippets[command] && category.channels.has(msg.channel.id)) {
-		if (!caller.utils.discord.checkPermissions(msg.member!, 'snippet', config))
+		if (!caller.utils.misc.checkPermissions(msg.member!, 'snippet', config))
 			return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 
 		const snippet = config.snippets[command];
 		const userEmbed = new MessageEmbed()
-			.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
+			.setAuthor(snippet.anonymous ? 'Staff Reply' : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() : msg.author.dynamicAvatarURL())
 			.setColor(COLORS.RED)
 			.setDescription(snippet.content)
 			.setTimestamp();
 		const channelEmbed = new MessageEmbed()
-			.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
-			.setColor(COLORS.GREEN)
+			.setAuthor(snippet.anonymous ? 'Staff Reply' : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() : msg.author.dynamicAvatarURL())
+			.setColor(COLORS.LIGHT_BLUE)
 			.setDescription(snippet.content)
 			.setTimestamp();
 
@@ -191,9 +212,9 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 	}
 	else if (!cmd) return;
 
-	if (!caller.utils.discord.checkPermissions(msg.member!, cmd.name, config))
+	if (!caller.utils.misc.checkPermissions(msg.member!, cmd.name, config))
 		return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
-	if (cmd.options.threadOnly && (!log || !category.channels.has(msg.channel.id))) return;
+	if (cmd.options.threadOnly && (!log)) return;
 	const channel = msg.channel as TextChannel;
 
 	try {

@@ -2,6 +2,8 @@ import Command from '../lib/structures/Command';
 import Axios from 'axios';
 import MessageEmbed from '../lib/structures/MessageEmbed';
 import { COLORS } from '../Constants';
+import {AnyChannel, TextChannel} from 'eris';
+import ms from 'ms';
 
 export default new Command('set', async (caller, cmd, _log, config) => {
 	const invalidArgsEmbed = new MessageEmbed()
@@ -16,6 +18,8 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 \`logs\`: send the ID of the channel where you want your logs to go to.
 \`status\`: change the displayed status of your bot.
 \`notification\`: send the role ID you want to be mentioned on thread creation.
+\`account_age\`: the age an account needs to have in order to open a new thread.
+\`guild_age\`: the time an account needs to have been inside the server in order to open a new thread.
 \`embed_creation_title\`: the title of the embed sent to the user when the thread is opened.
 \`embed_creation_description\`: the description of the embed sent to the user when the thread is opened.
 \`embed_creation_color\`: the color (hex code) of the embed sent to the user when the thread is opened.
@@ -67,8 +71,9 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 		case 'category':
 			// eslint-disable-next-line no-case-declarations
 			const categoryChannel = caller.bot.getChannel(cmd.args[1]);
-			if (!categoryChannel || categoryChannel.type !== 4)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to select a valid channel.');
+			if (!categoryChannel || categoryChannel.type !== 4 || categoryChannel.guild.id !== process.env.MAIN_GUILD_ID)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to select a valid channel within the main server.');
+
 
 			updated = await caller.db.updateConfig('mainCategoryID', cmd.args[1]);
 			if (updated)
@@ -79,11 +84,14 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 
 		case 'logs':
 			// eslint-disable-next-line no-case-declarations
-			const logsChannel = cmd.msg.channelMentions[0] ? caller.bot.getChannel(cmd.msg.channelMentions[0]) || caller.bot.getChannel(cmd.args[1]) : caller.bot.getChannel(cmd.args[1]);
-			if (!logsChannel || logsChannel.type !== 0)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to select a valid channel.');
+			let logsChannel: AnyChannel;
+			if (cmd.args[1] !== 'none') {
+				logsChannel = cmd.msg.channelMentions[0] ? caller.bot.getChannel(cmd.msg.channelMentions[0]) || caller.bot.getChannel(cmd.args[1]) : caller.bot.getChannel(cmd.args[1]);
+				if (!logsChannel || logsChannel.type !== 0)
+					return caller.utils.discord.createMessage(cmd.channel.id, 'You have to select a valid channel.');
+			}
 
-			updated = await caller.db.updateConfig('logsChannelID', logsChannel.id);
+			updated = await caller.db.updateConfig('logsChannelID', cmd.args[1] === 'none' ? '' : (logsChannel! as TextChannel).id, cmd.args[1] === 'none' ? 'UNSET' : 'SET');
 			if (updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The channel where logs are sent has been changed.');
 			if (!updated)
@@ -101,6 +109,30 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 			}
 			if (!updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The status could not be updated.');
+			break;
+
+		case 'account_age':
+			// eslint-disable-next-line no-case-declarations
+			const accountAge = ms(cmd.args[1]);
+			if (!accountAge && cmd.args[1] !== '0')
+				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to select a valid format. For example, 1d = 1 day / 30m = 30 minutes. To disable it, just type `0`.');
+			updated = await caller.db.updateConfig('accountAge', cmd.args[1] === '0' ? 0 : accountAge, cmd.args[1] === '0' ? 'UNSET' : 'SET');
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The account age restriction has been changed.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The account age restriction could not be updated.');
+			break;
+
+		case 'guild_age':
+			// eslint-disable-next-line no-case-declarations
+			const guildAge = ms(cmd.args[1]);
+			if (!guildAge && cmd.args[1] !== '0')
+				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to select a valid format. For example, 1d = 1 day / 30m = 30 minutes. To disable it, just type `0`.');
+			updated = await caller.db.updateConfig('guildAge', cmd.args[1] === '0' ? 0 : guildAge, cmd.args[1] === '0' ? 'UNSET' : 'SET');
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The guild age restriction has been changed.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The guild age restriction could not be updated.');
 			break;
 
 		case 'notification':
@@ -147,14 +179,14 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 			break;
 
 		case 'embed_creation_footer_image':
-			if (!(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/gm.test(cmd.args[1])))
+			if (!(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/gm.test(cmd.args[1])) && cmd.args[1] !== 'none')
 				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to provide a valid link.');
 
-			updated = await caller.db.updateConfig('embeds.creation.footerImageURL', cmd.args[1]);
+			updated = await caller.db.updateConfig('embeds.creation.footerImageURL', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
 			if (updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'Creation embed description updated.');
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Creation embed footer image updated.');
 			if (!updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The creation embed description could not be updated.');
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The creation embed footer image could not be updated.');
 			break;
 
 		case 'embed_contact_title':
@@ -193,14 +225,14 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 			break;
 
 		case 'embed_contact_footer_image':
-			if (!(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/gm.test(cmd.args[1])))
+			if (!(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/gm.test(cmd.args[1])) && cmd.args[1] !== 'none')
 				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to provide a valid link.');
 
-			updated = await caller.db.updateConfig('embeds.contact.footerImageURL', cmd.args[1]);
+			updated = await caller.db.updateConfig('embeds.contact.footerImageURL', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
 			if (updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'Contact embed description updated.');
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Contact embed footer image updated.');
 			if (!updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed description could not be updated.');
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed footer image could not be updated.');
 			break;
 
 		case 'embed_closure_title':
@@ -239,14 +271,14 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 			break;
 
 		case 'embed_closure_footer_image':
-			if (!(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/gm.test(cmd.args[1])))
+			if (!(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/gm.test(cmd.args[1])) && cmd.args[1] !== 'none')
 				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to provide a valid link.');
 
-			updated = await caller.db.updateConfig('embeds.closure.footerImageURL', cmd.args[1]);
+			updated = await caller.db.updateConfig('embeds.closure.footerImageURL', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
 			if (updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'Closure embed description updated.');
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Closure embed footer image updated.');
 			if (!updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The closure embed description could not be updated.');
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The closure embed footer image could not be updated.');
 			break;
 
 		case 'embed_staff_title':

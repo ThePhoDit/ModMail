@@ -8,10 +8,8 @@ import {
 	Constants,
 	CategoryChannel,
 	VoiceChannel,
-	CreateChannelOptions, Member
+	CreateChannelOptions
 } from 'eris';
-import { IConfig } from '../types/Database';
-import Command from '../structures/Command';
 
 class DiscordUtils {
 	private caller: Mail;
@@ -93,65 +91,10 @@ class DiscordUtils {
 	}
 
 	/**
-	 * Check if someone has permissions to run a command.
-	 * @param {Member} member - A guild member.
-	 * @param {string} command - A command name.
-	 * @param {IConfig} config - The guild's config.
-	 * @return {boolean}
+	 * Convert ID mentions to something readable in the logs.
+	 * @param {string} content
+	 * @returns {string}
 	 */
-	checkPermissions(member: Member, command: string, config: IConfig): boolean {
-		let hasPerms = false;
-
-		let toCheck: ('ADMIN' | 'SUPPORT' | 'REGULAR')[];
-
-		if (command === 'snippet') toCheck = ['ADMIN', 'SUPPORT'];
-		else {
-			const cmd = this.caller.commands.get(command) as Command;
-			switch (cmd.options.level) {
-				case 'ADMIN':
-					toCheck = ['ADMIN'];
-					break;
-				case 'SUPPORT':
-					toCheck = ['ADMIN', 'SUPPORT'];
-					break;
-				case 'REGULAR':
-					toCheck = ['ADMIN', 'SUPPORT', 'REGULAR'];
-					break;
-			}
-		}
-
-		// Check through all permissions and roles.
-		for (const perm of toCheck) {
-			if (member.permissions.has('administrator')) return true;
-
-			if (config.levelPermissions && config.levelPermissions[perm]) {
-				if (config.levelPermissions[perm].includes(member.guild.id))
-					hasPerms = true;
-				if (config.levelPermissions[perm].includes(member.user.id))
-					hasPerms = true;
-				for (const id of config.levelPermissions[perm]!) {
-					if (member.roles.includes(id))
-						hasPerms = true;
-					if (hasPerms) break;
-				}
-			}
-
-			// Individual Command level
-			if (config.commandsPermissions && config.commandsPermissions[command]) {
-				if (config.commandsPermissions[command].includes(member.guild.id))
-					hasPerms = true;
-				if (config.commandsPermissions[command].includes(member.user.id))
-					hasPerms = true;
-				for (const id of config.commandsPermissions[command]) {
-					if (member.roles.includes(id))
-						hasPerms = true;
-					if (hasPerms) break;
-				}
-			}
-		}
-		return hasPerms;
-	}
-
 	formatMentions(content: string): string {
 		return content
 			.replace(/<@!?([0-9]+)>/g, ((match, p1): string => {

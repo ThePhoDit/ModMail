@@ -217,10 +217,11 @@ export default class Mongo implements IDatabase {
 			.catch(() => false);
 	}
 
-	appendMessage(logID: string, msg: Message, type: 'INTERNAL' | 'STAFF_REPLY' | 'RECIPIENT_REPLY', content: string | null = null): Promise<boolean> | false {
+	appendMessage(logID: string, msg: Message, type: 'INTERNAL' | 'STAFF_REPLY' | 'RECIPIENT_REPLY', content: string | null = null, complementaryID?: string, overrideID?: string): Promise<boolean> | false {
 		const message: IMessage = {
 			timestamp: new Date(),
-			id: msg.id,
+			id: overrideID ? overrideID : msg.id,
+			complementaryID: complementaryID,
 			type: type,
 			author: {
 				id: msg.author.id,
@@ -233,6 +234,29 @@ export default class Mongo implements IDatabase {
 		};
 
 		return this.updateLog(logID, 'messages', message, 'PUSH');
+	}
+
+	editMessage(log: LogDocument, messageID: string, content: string): boolean {
+		const message = log.messages.find((m) => m.id === messageID);
+		if (!message)
+			return false;
+
+		let update;
+		if (message.originalContent || content.startsWith('[DELETED]'))
+			update = { 'messages.$.content': content };
+		else
+			update = {
+				'messages.$.originalContent': message.content,
+				'messages.$.content': content
+			};
+
+		/// here
+		return Log.updateOne(
+			{ _id: log._id, 'messages.id': messageID },
+			{ '$set': update}
+		)
+			.then(() => true)
+			.catch(() => false);
 	}
 
 	deleteLog(logID: string): Promise<boolean> {

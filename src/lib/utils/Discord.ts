@@ -8,7 +8,8 @@ import {
 	Constants,
 	CategoryChannel,
 	VoiceChannel,
-	CreateChannelOptions
+	CreateChannelOptions,
+	PrivateChannel
 } from 'eris';
 
 class DiscordUtils {
@@ -88,6 +89,45 @@ class DiscordUtils {
 		} catch (e) {
 			return false;
 		}
+	}
+
+	/**
+	 * Get a message.
+	 * @param {string} channelID - The channel ID.
+	 * @param {string} messageID - The message ID.
+	 * @param {boolean} user - Whether is a DM or not
+	 * @returns {Promise<Message|boolean>} - A Discord Message or false.
+	 */
+	async fetchMessage(channelID: string, messageID: string, dm = false): Promise<Message | false> {
+		let channel;
+		if (dm) {
+			const usr = this.caller.bot.users.get(channelID) || await this.fetchUser(channelID);
+			if (!usr) return false;
+
+			try {
+				channel = await usr.getDMChannel();
+				if (!channel || [0, 1].indexOf(channel.type) < 0) return false;
+			}
+			catch (e) {
+				return false;
+			}
+		} else
+			try {
+				channel = this.caller.bot.getChannel(channelID);
+				if (!channel || [0, 1].indexOf(channel.type) < 0) return false;
+			} catch (e) {
+				return false;
+			}
+
+		try {
+			const guildMsg = await (channel as TextChannel | PrivateChannel).getMessage(messageID);
+			if (!guildMsg) return false;
+			return guildMsg;
+		}
+		catch (e) {
+			return false;
+		}
+
 	}
 
 	/**

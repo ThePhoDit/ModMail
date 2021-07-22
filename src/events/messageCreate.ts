@@ -59,6 +59,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			.catch(() => false);
 
 		// If there is no current open log for this user.
+		let channelMessage: Message | false;
 		if (!log) {
 			// Check for account and guild ages.
 			if (config.accountAge && config.accountAge > (Date.now() - msg.author.createdAt))
@@ -127,7 +128,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 					content = `<@&${config.notificationRole}>`;
 					break;
 			}
-			(channel as TextChannel).createMessage({ content: content, embed: guildOpenEmbed.code }, files);
+			channelMessage = await (channel as TextChannel).createMessage({ content: content, embed: guildOpenEmbed.code }, files);
 		}
 		// If there is a current thread.
 		else {
@@ -145,7 +146,9 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			// Look for subscribers
 			const content = log.subscriptions.map((userID) => `<@${userID}>`).join(' ');
 
-			caller.utils.discord.createMessage(channel.id, { content: content, embed: guildEmbed.code }, false, files);
+			channelMessage = await caller.utils.discord.createMessage(channel.id, { content: content, embed: guildEmbed.code }, false, files);
+			if (!channelMessage)
+				return caller.utils.discord.createMessage(msg.author.id, 'Could not send your message to the staff.', true);
 			msg.addReaction('✅').catch(() => false);
 
 			// Remove schedules if any.
@@ -161,7 +164,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			}
 		}
 		// Add message to the log.
-		return caller.db.appendMessage((log as LogDocument)._id, msg, 'RECIPIENT_REPLY');
+		return caller.db.appendMessage((log as LogDocument)._id, msg, 'RECIPIENT_REPLY', undefined, channelMessage.id);
 	}
 
 	// -------------------------
@@ -203,11 +206,13 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			.setDescription(snippet.content)
 			.setTimestamp();
 
-		caller.utils.discord.createMessage(msg.channel.id, { embed: channelEmbed.code });
-		caller.utils.discord.createMessage(log.recipient.id, { embed: userEmbed.code }, true);
+		const guildMsg = await caller.utils.discord.createMessage(msg.channel.id, { embed: channelEmbed.code });
+		const userMsg = await caller.utils.discord.createMessage(log.recipient.id, { embed: userEmbed.code }, true);
+		if (!(guildMsg || userMsg))
+			return caller.utils.discord.createMessage(msg.channel.id, 'There has been an error sending this snippet.');
 
 		// Add log to the DB.
-		caller.db.appendMessage(log._id, msg, 'STAFF_REPLY', `[SNIPPET] ${snippet.content}`);
+		caller.db.appendMessage(log._id, msg, 'STAFF_REPLY', `[SNIPPET] ${snippet.content}`, (userMsg as Message).id, (guildMsg as Message).id);
 		return;
 	}
 	else if (!cmd) return;

@@ -2,7 +2,7 @@ import Command from '../lib/structures/Command';
 import MessageEmbed from '../lib/structures/MessageEmbed';
 import { COLORS } from '../Constants';
 import Axios from 'axios';
-import { MessageFile } from 'eris';
+import { Message, MessageFile } from 'eris';
 
 export default new Command('areply', async (caller, cmd, log) => {
 	if (!cmd.args[0] && cmd.msg.attachments.length === 0)
@@ -24,8 +24,10 @@ export default new Command('areply', async (caller, cmd, log) => {
 		.setDescription(cmd.args.join(' ') || 'No content provided.')
 		.setTimestamp();
 
-	caller.utils.discord.createMessage(cmd.channel.id, { embed: channelEmbed.code }, false, files);
-	caller.utils.discord.createMessage(log!.recipient.id, { embed: userEmbed.code }, true, files);
+	const guildMsg = await caller.utils.discord.createMessage(cmd.channel.id, { embed: channelEmbed.code }, false, files);
+	const userMsg = await caller.utils.discord.createMessage(log!.recipient.id, { embed: userEmbed.code }, true, files);
+	if (!(guildMsg || userMsg))
+		return caller.utils.discord.createMessage(cmd.channel.id, 'There has been an error responding to the user.');
 
 	// Remove schedules if any.
 	if (log!.closureMessage) caller.db.updateLog(log!._id, 'closureMessage', '', 'UNSET');
@@ -40,7 +42,7 @@ export default new Command('areply', async (caller, cmd, log) => {
 	}
 
 	// Add log to the DB.
-	caller.db.appendMessage(log!._id, cmd.msg, 'STAFF_REPLY', cmd.args.join(' '));
+	caller.db.appendMessage(log!._id, cmd.msg, 'STAFF_REPLY', cmd.args.join(' '), (userMsg as Message).id, (guildMsg as Message).id);
 },
 {
 	level: 'SUPPORT',

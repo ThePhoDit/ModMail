@@ -10,9 +10,11 @@ interface IUser {
 interface IMessage {
 	timestamp: Date;
 	id: string;
+	complementaryID?: string;
 	type: 'INTERNAL' | 'STAFF_REPLY' | 'RECIPIENT_REPLY',
 	author: IUser;
 	content: string;
+	originalContent?: string;
 	attachments: string[];
 }
 

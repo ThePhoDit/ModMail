@@ -16,7 +16,7 @@ export default async (caller: Mail, msg: Message, oldMsg: MessageObject | null):
 	if (!guildMsg || !guildMsg.embeds[0]) return;
 
 	guildMsg.embeds[0].description = msg.content;
-	guildMsg.embeds[0].footer ? guildMsg.embeds[0].footer.text = 'EDITED' : guildMsg.embeds[0].footer = { text: 'EDITED' };
+	guildMsg.embeds[0].footer ? guildMsg.embeds[0].footer.text = 'Edited' : guildMsg.embeds[0].footer = { text: 'Edited' };
 	guildMsg.edit({ embed: guildMsg.embeds[0] })
 		.catch();
 };

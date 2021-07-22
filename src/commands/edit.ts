@@ -28,7 +28,7 @@ export default new Command('edit', async (caller, cmd, log) => {
 		});
 
 	guildMsg.embeds[0].description = cmd.args.slice(1).join(' ');
-	guildMsg.embeds[0].footer ? guildMsg.embeds[0].footer.text = 'EDITED' : guildMsg.embeds[0].footer = { text: 'EDITED' };
+	guildMsg.embeds[0].footer ? guildMsg.embeds[0].footer.text = 'Edited' : guildMsg.embeds[0].footer = { text: 'Edited' };
 	guildMsg.edit({ embed: guildMsg.embeds[0] })
 		.catch(() => {
 			return caller.utils.discord.createMessage(cmd.channel.id, 'The message could not be edited.');

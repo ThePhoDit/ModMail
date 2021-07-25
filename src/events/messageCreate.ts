@@ -7,6 +7,8 @@ import { LogDocument } from '../lib/types/Database';
 
 export default async (caller: Mail, msg: Message): Promise<unknown> => {
 
+	if (msg.author.bot) return;
+
 	let config = (await caller.db.getConfig());
 	// Setup command.
 	if (!config && msg.member?.permission.has('administrator') && msg.channel.type === 0 && msg.content === '+setup') {
@@ -46,7 +48,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 	let log: LogDocument | null | false;
 
 	// If message is in DMs and is not by a bot.
-	if (msg.channel.type === 1 && !msg.author.bot) {
+	if (msg.channel.type === 1) {
 		// Check if the user is blacklisted.
 		if (config.blacklist.includes(msg.author.id)) return;
 
@@ -170,7 +172,6 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 	// -------------------------
 	// Messages sent out of DMs.
 	const prefix = config.prefix;
-	if (msg.author.bot) return;
 
 	// Gets a log (if any)
 	log = await caller.db.getLog(msg.channel.id);

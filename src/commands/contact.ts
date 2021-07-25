@@ -8,6 +8,8 @@ export default new Command('contact', async (caller, cmd, _log, config) => {
 	const user = cmd.msg.mentions[0] || caller.bot.users.get(cmd.args[0]) || await caller.utils.discord.fetchUser(cmd.args[0]);
 	if (!user || !cmd.channel.guild.members.has(user.id))
 		return caller.utils.discord.createMessage(cmd.channel.id, 'Member not found.');
+	if (user.bot)
+		return caller.utils.discord.createMessage(cmd.channel.id, 'You cannot contact a bot.');
 
 	// Check if there is a current thread of the specified user.
 	const openLog = await caller.db.getLog(user.id, 'USER');

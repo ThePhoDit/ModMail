@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import { join } from 'path';
 dotenv.config({ path: join(__dirname, '../.env')});
-console.log(process.env);
 if (!process.env.BOT_TOKEN) throw new Error('[BOT] No token found.');
 if (!process.env.MAIN_GUILD_ID) throw new Error('[BOT] No main guild ID found.');
 

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
+console.log(process.env);
 if (!process.env.BOT_TOKEN) throw new Error('[BOT] No token found.');
 if (!process.env.MAIN_GUILD_ID) throw new Error('[BOT] No main guild ID found.');
 

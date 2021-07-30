@@ -7,6 +7,7 @@ import Mail from '../lib/structures/Mail';
 
 if (!process.env.MONGO_URI) throw new Error('[MONGO DB] No URI provided.');
 set('useFindAndModify', false);
+set('useCreateIndex', true);
 
 export default class Mongo implements IDatabase {
 	// @ts-ignore

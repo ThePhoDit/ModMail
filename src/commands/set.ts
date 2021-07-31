@@ -20,17 +20,21 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 \`notification\`: send the role ID you want to be mentioned on thread creation.
 \`account_age\`: the age an account needs to have in order to open a new thread.
 \`guild_age\`: the time an account needs to have been inside the server in order to open a new thread.
+\`guild_age_id\`: the server ID where someone needs to have the required **guild_age**.
 \`embed_creation_title\`: the title of the embed sent to the user when the thread is opened.
+\`embed_creation_thumbnail\`: the thumbnail of the embed sent to the user when the thread is opened ("none" to disable).
 \`embed_creation_description\`: the description of the embed sent to the user when the thread is opened.
 \`embed_creation_color\`: the color (hex code) of the embed sent to the user when the thread is opened.
 \`embed_creation_footer_text\`: the footer of the embed sent to the user when the thread is opened.
 \`embed_creation_footer_image\`: the footer image of the embed sent to the user when the thread is opened.
 \`embed_contact_title\`: the title of the embed sent to the user when the thread is created by a staff member.
+\`embed_contact_thumbnail\`: the thumbnail of the embed sent to the user when the thread is created by a staff member ("none" to disable).
 \`embed_contact_description\`: the description of the embed sent to the user when the thread is created by a staff member.
 \`embed_contact_color\`: the color (hex code) of the embed sent to the user when the thread is created by a staff member.
 \`embed_contact_footer_text\`: the footer of the embed sent to the user when the thread is created by a staff member.
 \`embed_contact_footer_image\`: the footer image of the embed sent to the user when the thread is created by a staff member.
 \`embed_closure_title\`: the title of the embed sent to the user when the thread is closed.
+\`embed_closure_thumbnail\`: the thumbnail of the embed sent to the user when the thread is closed ("none" to disable).
 \`embed_closure_description\`: the description of the embed sent to the user when the thread is closed.
 \`embed_closure_color\`: the color (hex code) of the embed sent to the user when the thread is closed.
 \`embed_closure_footer_text\`: the footer of the embed sent to the user when the thread is closed.
@@ -139,6 +143,18 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The guild age restriction could not be updated.');
 			break;
 
+		case 'guild_age_id':
+			// eslint-disable-next-line no-case-declarations
+			const guild = caller.bot.guilds.get(cmd.args[1]);
+			if (!guild)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'I am not in that server, please select one in which i am in.');
+			updated = await caller.db.updateConfig('guildAgeID', guild.id);
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The guild age ID has been changed.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The guild age ID could not be updated.');
+			break;
+
 		case 'notification':
 			updated = await caller.db.updateConfig('notificationRole', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
 			if (updated)
@@ -153,6 +169,14 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 				return caller.utils.discord.createMessage(cmd.channel.id, 'Creation embed title updated.');
 			if (!updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The creation embed title could not be updated.');
+			break;
+
+		case 'embed_creation_thumbnail':
+			updated = await caller.db.updateConfig('embeds.creation.thumbnail', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Creation embed thumbnail updated.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The creation embed thumbnail could not be updated.');
 			break;
 
 		case 'embed_creation_description':
@@ -201,6 +225,14 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed title could not be updated.');
 			break;
 
+		case 'embed_contact_thumbnail':
+			updated = await caller.db.updateConfig('embeds.contact.thumbnail', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Contact embed thumbnail updated.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed thumbnail could not be updated.');
+			break;
+
 		case 'embed_contact_description':
 			updated = await caller.db.updateConfig('embeds.contact.description', cmd.args.slice(1).join(' '));
 			if (updated)
@@ -245,6 +277,14 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 				return caller.utils.discord.createMessage(cmd.channel.id, 'Closure embed title updated.');
 			if (!updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The closure embed title could not be updated.');
+			break;
+
+		case 'embed_closure_thumbnail':
+			updated = await caller.db.updateConfig('embeds.closure.thumbnail', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Closure embed thumbnail updated.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The closure embed thumbnail could not be updated.');
 			break;
 
 		case 'embed_closure_description':

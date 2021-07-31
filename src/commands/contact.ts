@@ -25,11 +25,12 @@ export default new Command('contact', async (caller, cmd, _log, config) => {
 		// User Embed
 		const userEmbed = new MessageEmbed()
 			.setTitle(config.embeds.contact.title)
-			.setThumbnail(cmd.channel.guild.dynamicIconURL())
 			.setColor(config.embeds.contact.color)
 			.setDescription(config.embeds.contact.description)
 			.setFooter(config.embeds.contact.footer, config.embeds.contact.footerImageURL)
 			.setTimestamp();
+		if (config.embeds.contact.thumbnail)
+			userEmbed.setThumbnail(config.embeds.contact.thumbnail);
 		const userMsg = await caller.utils.discord.createMessage(user.id, { embed: userEmbed.code }, true);
 		if (!userMsg) {
 			caller.utils.discord.createMessage(cmd.channel.id, 'Sorry, I could not DM the selected user.');

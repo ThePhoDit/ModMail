@@ -149,6 +149,9 @@ const config = new Schema({
 	guildAge: {
 		type: Number
 	},
+	guildAgeID: {
+		type: String
+	},
 	blacklist: {
 		type: [String],
 		required: true,
@@ -192,6 +195,9 @@ const config = new Schema({
 				default: 'Thread Opened',
 				maxlength: 256
 			},
+			thumbnail: {
+				type: String
+			},
 			description: {
 				type: String,
 				required: true,
@@ -220,6 +226,9 @@ const config = new Schema({
 				default: 'Thread Opened',
 				maxlength: 256
 			},
+			thumbnail: {
+				type: String
+			},
 			description: {
 				type: String,
 				required: true,
@@ -247,6 +256,9 @@ const config = new Schema({
 				required: true,
 				default: 'Thread Closed',
 				maxlength: 256
+			},
+			thumbnail: {
+				type: String
 			},
 			description: {
 				type: String,

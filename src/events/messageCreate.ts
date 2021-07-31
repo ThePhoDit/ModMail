@@ -67,11 +67,19 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			if (config.accountAge && config.accountAge > (Date.now() - msg.author.createdAt))
 				return caller.utils.discord.createMessage(msg.author.id, 'Your account is not old enough to contact the staff.', true);
 
-			const guildMember = category.guild.members.get(msg.author.id);
-			if (!guildMember)
-				return caller.utils.discord.createMessage(msg.author.id, 'Your account has not been in the server long enough to contact the staff.', true);
-			if (config.guildAge && config.guildAge > (Date.now() - guildMember.joinedAt))
-				return caller.utils.discord.createMessage(msg.author.id, 'Your account has not been in the server long enough to contact the staff.', true);
+			if (config.guildAge) {
+				const guild = config.guildAgeID ?
+					caller.bot.guilds.get(config.guildAgeID) :
+					category.guild;
+				if (guild) {
+					const guildMember = guild.members.get(msg.author.id);
+					if (!guildMember)
+						return caller.utils.discord.createMessage(msg.author.id, 'Your account has not been in the server long enough to contact the staff.', true);
+					if (config.guildAge > (Date.now() - guildMember.joinedAt))
+						return caller.utils.discord.createMessage(msg.author.id, 'Your account has not been in the server long enough to contact the staff.', true);
+				}
+			}
+
 			// Creates the channel on the main server.
 			const channel = await caller.utils.discord.createChannel(process.env.MAIN_GUILD_ID!, `${msg.author.username}-${msg.author.discriminator}`, 'GUILD_TEXT', {
 				parentID: category.id,
@@ -101,11 +109,12 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			// Sends messages both to the user and the staff.
 			const userOpenEmbed = new MessageEmbed()
 				.setTitle(config.embeds.creation.title)
-				.setThumbnail(category.guild.dynamicIconURL())
 				.setColor(config.embeds.creation.color)
 				.setDescription(config.embeds.creation.description)
 				.setFooter(config.embeds.creation.footer, config.embeds.creation.footerImageURL)
 				.setTimestamp();
+			if (config.embeds.creation.thumbnail)
+				userOpenEmbed.setThumbnail(config.embeds.creation.thumbnail);
 			const guildOpenEmbed = new MessageEmbed()
 				.setTitle(config.embeds.staff.title)
 				.setThumbnail(msg.author.dynamicAvatarURL())

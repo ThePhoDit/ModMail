@@ -46,6 +46,7 @@ interface ILog {
 
 interface IEmbed {
 	title: string;
+	thumbnail?: string;
 	description: string;
 	footer: string;
 	footerImageURL?: string;
@@ -65,6 +66,7 @@ interface IConfig {
 	status?: string;
 	accountAge?: number;
 	guildAge?: number;
+	guildAgeID?: string;
 	blacklist: string[];
 	levelPermissions: {
 		REGULAR: string[];

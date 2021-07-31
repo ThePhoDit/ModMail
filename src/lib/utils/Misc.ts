@@ -91,6 +91,8 @@ class MiscUtils {
 			.setDescription(closureReason ? closureReason : log.closureMessage ? log.closureMessage : config.embeds.closure.description)
 			.setFooter(config.embeds.closure.footer, config.embeds.closure.footerImageURL)
 			.setTimestamp();
+		if (config.embeds.closure.thumbnail)
+			endingEmbed.setThumbnail(config.embeds.closure.thumbnail);
 		this.caller.utils.discord.createMessage(log!.recipient.id, { embed: endingEmbed.code }, true);
 
 		if (config.logsChannelID) {

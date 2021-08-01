@@ -156,7 +156,7 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 			break;
 
 		case 'notification':
-			updated = await caller.db.updateConfig('notificationRole', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
+			updated = await caller.db.updateConfig('notificationRole', cmd.args[1] === 'none' ? '' : cmd.msg.roleMentions[0] || cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
 			if (updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The notification role has been updated.');
 			if (!updated)

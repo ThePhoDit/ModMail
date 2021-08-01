@@ -5,6 +5,8 @@ export default new Command('alias', async (caller, cmd, _log, config) => {
 		return caller.utils.discord.createMessage(cmd.channel.id, 'Please, use `add` or `remove`.');
 	if (!cmd.args[1])
 		return caller.utils.discord.createMessage(cmd.channel.id, 'You have to specify an alias.');
+	if (caller.aliases.has(cmd.args[1]))
+		return caller.utils.discord.createMessage(cmd.channel.id, 'You cannot use that alias name, it is a reserved alias for the bot.');
 	if (!cmd.args[2] && ['remove', 'rmv'].indexOf(cmd.args[0]) < 0)
 		return caller.utils.discord.createMessage(cmd.channel.id, 'You have to specify the command that will be connected to the selected alias.');
 

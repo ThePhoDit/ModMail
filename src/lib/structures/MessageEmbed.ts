@@ -1,6 +1,6 @@
 const embedLimits = {
 	title: 256,
-	description: 2048,
+	description: 4096,
 	fieldName: 256,
 	fieldValue: 1024,
 	footerText: 2048,

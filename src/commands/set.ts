@@ -134,6 +134,7 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to select a valid format. For example, 1d = 1 day / 30m = 30 minutes. To disable it, just type `0`.\nValid letters: m / h / d / w / y');
 			// eslint-disable-next-line no-case-declarations
 			const guildAge = ms(cmd.args[1]);
+			console.log(guildAge);
 			if ((!guildAge && cmd.args[1] !== '0') || guildAge > 315569520000)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to select a valid format, lower than 10 years. For example, 1d = 1 day / 30m = 30 minutes. To disable it, just type `0`.');
 			updated = await caller.db.updateConfig('guildAge', cmd.args[1] === '0' ? 0 : guildAge, cmd.args[1] === '0' ? 'UNSET' : 'SET');

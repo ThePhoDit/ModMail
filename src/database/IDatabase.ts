@@ -1,16 +1,24 @@
-import { LogDB, SnippetDB, UserDB } from '../lib/types/Database';
+import {IConfig, ILog, ISnippet, IUser, IMessage, LogDocument} from '../lib/types/Database';
+import { Message } from 'eris';
 
 export interface IDatabase {
-	getUser(id: string, channel: boolean): Promise<UserDB | null>;
-	addUser(id: string): Promise<void>;
-	boundChannel(userID: string, channelID: string): Promise<void>;
-	getSnippet(name: string): Promise<SnippetDB | null>;
-	closeChannel(id: string): void;
-	updateBlacklist(userID: string, action: 'add' | 'remove'): void;
-	createSnippet(name: string, creatorID: string, content: string): void;
-	deleteSnippet(name: string): void;
-	getSnippets(): Promise<SnippetDB[]>;
-	addMessage(userID: string, location: 'USER' | 'ADMIN' | 'OOT', content: string, logID: string, images: string[] | undefined): Promise<void>;
-	getLogs(logID: string): Promise<LogDB | null>;
-	getUserLogs(userID: string): Promise<string[] | null>;
+	// Configs collection
+	createConfig(data: Partial<IConfig>): Promise<IConfig | null>;
+	getConfig(): Promise<IConfig | null>;
+	updateConfig(key: string, value: string | number | boolean , operation: 'SET' | 'PUSH' | 'PULL' | 'UNSET'): Promise<boolean> | false;
+	deleteConfig(): Promise<boolean>;
+	// Snippets
+	createSnippet(name: string, data: ISnippet): Promise<boolean>;
+	editSnippet(name: string, value: string): Promise<boolean> | false;
+	deleteSnippet(name: string): Promise<boolean> | false;
+	// Logs part
+	createLog(data: Partial<ILog>): Promise<LogDocument | false>;
+	getLog(id: string, type: 'ID' | 'USER' | 'CHANNEL', open: boolean): Promise<LogDocument | null>;
+	appendMessage(logID: string, msg: Message, type: 'INTERNAL' | 'STAFF_REPLY' | 'RECIPIENT_REPLY', content: string | null, complementaryID?: string, overrideID?: string): Promise<boolean> | false;
+	closeLog(log: LogDocument, msg?: Message, closer?: LogDocument['closer']): Promise<boolean>;
+	updateLog(logID: string, key: string, value: string | number | boolean | Date | IMessage | IUser, operation: 'SET' | 'PUSH' | 'PULL' | 'UNSET'): Promise<boolean> | false;
+	deleteLog(logID: string): Promise<boolean>;
+	getUserLogs(userID: string): Promise<LogDocument[] | null>;
+	getClosingScheduledLogs(userID: string): Promise<LogDocument[] | null>;
+	numberOfPreviousLogs(userID: string): Promise<number>;
 }

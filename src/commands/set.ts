@@ -11,7 +11,7 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 		.setColor(COLORS.GREEN)
 		.setThumbnail(cmd.channel.guild.dynamicIconURL())
 		.setDescription(`
-\`avatar\`: send an image link to change the bot avatar.
+\`avatar\`: attach an image to change the bot avatar.
 \`username\`: change the bot username, not the nickname.
 \`prefix\`: change the bot prefix (max length: 4).
 \`category\`: send the ID of the category where you want new threads to open.
@@ -49,9 +49,19 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 	let updated: boolean;
 	switch (cmd.args[0]) {
 		case 'avatar':
+			if (!cmd.msg.attachments[0])
+				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to attach an image to the message.');
 			Axios.get<Buffer>(cmd.msg.attachments[0].url, { responseType: 'arraybuffer' }).then(response => {
-				caller.bot.editSelf({ avatar: `data:image/${cmd.msg.attachments[0].filename.endsWith('png') ? 'png' : 'jpeg'};base64,${response.data.toString('base64')}` });
-			});
+				caller.bot.editSelf({ avatar: `data:image/${cmd.msg.attachments[0].filename.endsWith('png') ? 'png' : 'jpeg'};base64,${response.data.toString('base64')}` })
+					.catch((err) => {
+						caller.utils.discord.createMessage(cmd.channel.id, 'Avatar could not be edited.');
+						console.log(err);
+					});
+			})
+				.catch((err) => {
+					caller.utils.discord.createMessage(cmd.channel.id, 'Avatar could not be edited.');
+					console.log(err);
+				});
 			caller.utils.discord.createMessage(cmd.channel.id, 'Avatar edited.');
 			break;
 

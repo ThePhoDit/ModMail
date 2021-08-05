@@ -9,7 +9,7 @@ export default new Command('rename', async (caller, cmd) => {
 		.catch(() => caller.utils.discord.createMessage(cmd.channel.id, 'There has been an error editing the name of the channel.'));
 },
 {
-	level: 'MANAGER',
+	level: 'ADMIN',
 	threadOnly: true,
 	aliases: []
 });

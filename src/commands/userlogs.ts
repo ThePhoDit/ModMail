@@ -9,7 +9,7 @@ export default new Command('userlogs', async (caller, cmd) => {
 	if (!links) return caller.utils.discord.createMessage(cmd.channel.id, 'No logs found.');
 
 	// Send multiple messages if there are too many logs.
-	const linksMap = links.map((log) => `${process.env.LOGS_URL}log?id=${log._id}`);
+	const linksMap = links.map((log) => `<${process.env.LOGS_URL}log?id=${log._id}>`);
 	const linksArray: string[][] = [];
 	while (linksMap.length > 0)
 		linksArray.push(linksMap.splice(0, 20));

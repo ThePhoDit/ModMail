@@ -131,7 +131,7 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 			// eslint-disable-next-line no-case-declarations
 			const type = STATUSES[cmd.args[1].toUpperCase() as keyof typeof STATUSES];
 			if (!type || typeof type !== 'number')
-				return caller.utils.discord.createMessage(cmd.channel.id, 'Please, provide a valid type: `playing`, `streaming`, `listening`, `watching`, `competing`.');
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Please, provide a valid type: `playing`, `streaming`, `listening`, `watching` or `competing`.');
 
 			if (type === 1 && (!cmd.args[2] || !cmd.args[2].match(/https:\/\/(www\.)?twitch\.tv\/.+|https:\/\/(www\.)?youtube\.com\/.+/g)))
 				return caller.utils.discord.createMessage(cmd.channel.id, 'Please, provide a Twitch or YouTube URL.');

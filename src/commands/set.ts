@@ -1,9 +1,10 @@
 import Command from '../lib/structures/Command';
 import Axios from 'axios';
 import MessageEmbed from '../lib/structures/MessageEmbed';
-import { COLORS } from '../Constants';
-import {AnyChannel, TextChannel} from 'eris';
+import { COLORS, STATUSES } from '../Constants';
+import { AnyChannel, TextChannel } from 'eris';
 import ms from 'ms';
+import {IConfig} from "../lib/types/Database";
 
 export default new Command('set', async (caller, cmd, _log, config) => {
 	const invalidArgsEmbed = new MessageEmbed()
@@ -17,6 +18,7 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 \`category\`: send the ID of the category where you want new threads to open.
 \`logs\`: send the ID of the channel where you want your logs to go to.
 \`status\`: change the displayed status of your bot.
+\`status_type\`: change the displayed status type of your bot.
 \`notification\`: send the role ID you want to be mentioned on thread creation.
 \`account_age\`: the age an account needs to have in order to open a new thread.
 \`guild_age\`: the time an account needs to have been inside the server in order to open a new thread.
@@ -120,6 +122,35 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 					type: 0
 				});
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The status has been changed.');
+			}
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The status could not be updated.');
+			break;
+
+		case 'status_type':
+			// eslint-disable-next-line no-case-declarations
+			const type = STATUSES[cmd.args[1].toUpperCase() as keyof typeof STATUSES];
+			console.log(type);
+			if (!type || typeof type !== 'number')
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Please, provide a valid type: `playing`, `streaming`, `listening`, `watching`, `competing`.');
+
+			if (type === 1 && (!cmd.args[2] || !cmd.args[2].match(/https:\/\/(www\.)?twitch\.tv\/.+|https:\/\/(www\.)?youtube\.com\/.+/g)))
+				return caller.utils.discord.createMessage(cmd.channel.id, 'Please, provide a Twitch or YouTube URL.');
+
+			updated = await caller.db.updateConfig('statusType', type);
+			if (updated) {
+				const config = await caller.db.getConfig() as IConfig;
+				caller.bot.editStatus('online', {
+					name: config.status,
+					// @ts-ignore
+					type: type,
+					url: type === 1 ? cmd.args[2] : undefined
+				});
+
+				if (type === 1)
+					caller.db.updateConfig('statusURL', cmd.args[2]);
+
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The status type has been changed.');
 			}
 			if (!updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The status could not be updated.');

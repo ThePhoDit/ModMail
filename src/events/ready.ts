@@ -1,4 +1,5 @@
 import Mail from '../lib/structures/Mail';
+import { STATUSES } from '../Constants';
 
 export default async (caller: Mail): Promise<void> => {
 	const config = await caller.db.getConfig();
@@ -6,7 +7,8 @@ export default async (caller: Mail): Promise<void> => {
 	// Edits the Discord status from the bot.
 	caller.bot.editStatus('online', {
 		name: config?.status || 'DM me for help.',
-		type: 0
+		type: config?.statusType as STATUSES ?? 0,
+		url: config?.statusURL
 	});
 
 	// Find and close all scheduled threads every ten minutes.

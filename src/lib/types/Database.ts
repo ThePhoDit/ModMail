@@ -64,6 +64,8 @@ interface IConfig {
 	mainCategoryID: string;
 	logsChannelID?: string;
 	status?: string;
+	statusType?: number;
+	statusURL?: string;
 	accountAge?: number;
 	guildAge?: number;
 	guildAgeID?: string;

@@ -143,6 +143,12 @@ const config = new Schema({
 		type: String,
 		default: 'DM me for help.'
 	},
+	statusType: {
+		type: Number
+	},
+	statusURL: {
+		type: String
+	},
 	accountAge: {
 		type: Number
 	},

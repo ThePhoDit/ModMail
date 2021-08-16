@@ -6,3 +6,11 @@ export enum COLORS {
 	DARK_BLUE = '#3C00FF',
 	YELLOW = '#FFFC16'
 }
+
+export enum STATUSES {
+	PLAYING,
+	STREAMING,
+	LISTENING,
+	WATCHING,
+	COMPETING = 5
+}

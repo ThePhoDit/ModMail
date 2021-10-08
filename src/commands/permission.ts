@@ -11,7 +11,7 @@ export default new Command('permission', async (caller, cmd, _log, config) => {
 		return caller.utils.discord.createMessage(cmd.channel.id, 'Please, select a role or user ID.');
 
 	if (cmd.args[1] === 'add')
-		// Levels
+		// Levels+
 		if (['ADMIN', 'SUPPORT', 'REGULAR'].indexOf(cmd.args[0].toUpperCase()) >= 0) {
 			if (config.levelPermissions[cmd.args[0].toUpperCase() as ('REGULAR' | 'SUPPORT' | 'ADMIN')].includes(cmd.args[2]))
 				return caller.utils.discord.createMessage(cmd.channel.id, 'That ID is already added to the specified permission.');
@@ -28,7 +28,7 @@ export default new Command('permission', async (caller, cmd, _log, config) => {
 			if (!command)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The specified command does not exist.');
 
-			if (config.commandsPermissions && config.commandsPermissions[cmd.args[0].toLowerCase()] && config.commandsPermissions[cmd.args[0].toLowerCase()].includes(cmd.args[2]))
+			if (config.commandsPermissions && config.commandsPermissions[command.name] && config.commandsPermissions[command.name].includes(cmd.args[2]))
 				return caller.utils.discord.createMessage(cmd.channel.id, 'That ID is already added to the specified permission.');
 
 			const updated = await caller.db.updateConfig(`commandsPermissions.${command.name}`, cmd.args[2], 'PUSH');
@@ -56,7 +56,7 @@ export default new Command('permission', async (caller, cmd, _log, config) => {
 			if (!command)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The specified command does not exist.');
 
-			if (!(config.commandsPermissions || config.commandsPermissions[cmd.args[0].toLowerCase()]) || !config.commandsPermissions[cmd.args[0].toLowerCase()].includes(cmd.args[2]))
+			if (!config.commandsPermissions || !config.commandsPermissions[command.name] || !config.commandsPermissions[command.name].includes(cmd.args[2]))
 				return caller.utils.discord.createMessage(cmd.channel.id, 'That ID is not added to the specified permission.');
 
 			const updated = await caller.db.updateConfig(`commandsPermissions.${command.name}`, cmd.args[2], 'PULL');

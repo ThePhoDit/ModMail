@@ -67,7 +67,7 @@ export default new Command('snippet', async (caller, cmd, _log, config) => {
 				return caller.utils.discord.createMessage(cmd.channel.id, 'No snippets found.');
 
 			for (const name of Object.keys(snippetsRAW))
-				list.push(`${name} | ${snippetsRAW[name].content.length > 50 ? snippetsRAW[name].content.substr(0, 50) + '...' : snippetsRAW[name].content}`);
+				list.push(`${name} | ${snippetsRAW[name].content.length > 50 ? snippetsRAW[name].content.slice(0, 50) + '...' : snippetsRAW[name].content}`);
 
 			while (list.length > 0)
 				snippets.push(list.splice(0, s));

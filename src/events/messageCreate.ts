@@ -48,7 +48,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 	let log: LogDocument | null | false;
 
 	// If message is in DMs and is not by a bot.
-	if (msg.channel.type === 1) {
+	if (!msg.guildID) {
 		// Check if the user is blacklisted.
 		if (config.blacklist.includes(msg.author.id)) return;
 

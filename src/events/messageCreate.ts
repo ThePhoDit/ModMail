@@ -1,7 +1,7 @@
 import Mail from '../lib/structures/Mail';
 import MessageEmbed from '../lib/structures/MessageEmbed';
 import Axios from 'axios';
-import {CategoryChannel, Message, MessageFile, TextChannel} from 'eris';
+import {CategoryChannel, Message, FileContent, TextChannel} from 'eris';
 import { COLORS } from '../Constants';
 import { LogDocument } from '../lib/types/Database';
 
@@ -16,7 +16,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			permissionOverwrites: [
 				{
 					id: process.env.MAIN_GUILD_ID!,
-					type: 'role',
+					type: 0,
 					allow: 0,
 					deny: 1024 // Read messages & View channel. This means only admins can see the category the first time.
 				}
@@ -55,7 +55,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		log = await caller.db.getLog(msg.author.id, 'USER');
 
 		// Checks for any images sent.
-		const files: MessageFile[] = [];
+		const files: FileContent[] = [];
 		if (msg.attachments.length > 0) for (const file of msg.attachments) await Axios.get<Buffer>(file.url, { responseType: 'arraybuffer' })
 			.then((response) => files.push({ file: response.data, name: file.filename }))
 			.catch(() => false);
@@ -75,7 +75,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 					const guildMember = guild.members.get(msg.author.id);
 					if (!guildMember)
 						return caller.utils.discord.createMessage(msg.author.id, 'Your account has not been in the server long enough to contact the staff.', true);
-					if (config.guildAge > (Date.now() - guildMember.joinedAt))
+					if (config.guildAge > (Date.now() - guildMember.joinedAt!))
 						return caller.utils.discord.createMessage(msg.author.id, 'Your account has not been in the server long enough to contact the staff.', true);
 				}
 			}
@@ -206,12 +206,12 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 
 		const snippet = config.snippets[command];
 		const userEmbed = new MessageEmbed()
-			.setAuthor(snippet.anonymous ? 'Staff Reply' : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() : msg.author.dynamicAvatarURL())
+			.setAuthor(snippet.anonymous ? 'Staff Reply' : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() || undefined : msg.author.dynamicAvatarURL())
 			.setColor(COLORS.RED)
 			.setDescription(snippet.content)
 			.setTimestamp();
 		const channelEmbed = new MessageEmbed()
-			.setAuthor(snippet.anonymous ? 'Staff Reply' : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() : msg.author.dynamicAvatarURL())
+			.setAuthor(snippet.anonymous ? 'Staff Reply' : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() || undefined : msg.author.dynamicAvatarURL())
 			.setColor(COLORS.LIGHT_BLUE)
 			.setDescription(snippet.content)
 			.setTimestamp();

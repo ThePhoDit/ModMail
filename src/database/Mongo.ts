@@ -1,13 +1,11 @@
 import { IConfig, ISnippet, ILog, IMessage, IUser, ConfigDocument, LogDocument } from '../lib/types/Database';
 import { IDatabase } from './IDatabase';
-import { connect, Document, set, _FilterQuery, _AllowStringsForIds } from 'mongoose';
+import { connect, _FilterQuery } from 'mongoose';
 import { Config, Log } from './Schemas';
 import { Message } from 'eris';
 import Mail from '../lib/structures/Mail';
 
 if (!process.env.MONGO_URI) throw new Error('[MONGO DB] No URI provided.');
-set('useFindAndModify', false);
-set('useCreateIndex', true);
 
 export default class Mongo implements IDatabase {
 	// @ts-ignore
@@ -17,10 +15,7 @@ export default class Mongo implements IDatabase {
 
 	private constructor(caller: Mail) {
 		this.caller = caller;
-		this.DB = connect(process.env.MONGO_URI!, {
-			useUnifiedTopology: true,
-			useNewUrlParser: true
-		})
+		this.DB = connect(process.env.MONGO_URI!)
 			.then(() => console.log('[DATABASE] Connection established.'))
 			.catch((err) => console.error(`[DATABASE] Connection error:\n ${err}`));
 	}
@@ -79,6 +74,15 @@ export default class Mongo implements IDatabase {
 			.catch(() => false);
 	}
 
+	updateCompatibility(update: Partial<IConfig>): Promise<boolean> {
+		return Config.findOneAndUpdate(
+			{ botID: this.caller.bot.user.id },
+			update
+		)
+			.then(() => true)
+			.catch(() => false);
+	}
+
 	deleteConfig(): Promise<boolean> {
 		return Config.deleteOne({
 			botID: this.caller.bot.user.id
@@ -117,7 +121,7 @@ export default class Mongo implements IDatabase {
 	}
 
 	async getLog(id: string, type: 'ID' | 'USER' | 'CHANNEL' = 'CHANNEL', open = true): Promise<LogDocument | null> {
-		const filter: _FilterQuery<_AllowStringsForIds<Pick<Pick<Document<unknown>, '_id'>, '_id'>>> = {};
+		const filter: _FilterQuery<unknown> = {};
 
 		if (type === 'ID')
 			filter._id = id;
@@ -129,6 +133,7 @@ export default class Mongo implements IDatabase {
 		filter.open = open;
 		filter.botID = this.caller.bot.user.id;
 
+		// @ts-ignore
 		return await Log.findOne(filter)
 			.then((data: LogDocument) => data as LogDocument)
 			.catch(() => null);
@@ -237,7 +242,7 @@ export default class Mongo implements IDatabase {
 		return this.updateLog(logID, 'messages', message, 'PUSH');
 	}
 
-	editMessage(log: LogDocument, messageID: string, content: string): boolean {
+	editMessage(log: LogDocument, messageID: string, content: string): Promise<boolean> | false {
 		const message = log.messages.find((m) => m.id === messageID);
 		if (!message)
 			return false;

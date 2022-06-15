@@ -4,13 +4,12 @@ import MessageEmbed from '../lib/structures/MessageEmbed';
 import { COLORS, STATUSES } from '../Constants';
 import { AnyChannel, TextChannel } from 'eris';
 import ms from 'ms';
-import {IConfig} from "../lib/types/Database";
+import {IConfig} from '../lib/types/Database';
 
 export default new Command('set', async (caller, cmd, _log, config) => {
 	const invalidArgsEmbed = new MessageEmbed()
 		.setTitle('Settings you can change of the bot.')
 		.setColor(COLORS.GREEN)
-		.setThumbnail(cmd.channel.guild.dynamicIconURL())
 		.setDescription(`
 \`avatar\`: attach an image to change the bot avatar.
 \`username\`: change the bot username, not the nickname.
@@ -44,6 +43,9 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 \`embed_staff_title\`: the title of the embed sent to the staff when the thread is opened.
 \`embed_staff_color\`: the color (hex code) of the embed sent to the staff when the thread is opened.`)
 		.addField('Usage', `${config.prefix}set {parameter} {value}`);
+
+	if (cmd.channel.guild.dynamicIconURL())
+		invalidArgsEmbed.setThumbnail(cmd.channel.guild.dynamicIconURL() as string);
 
 	if (!cmd.args[0]) return caller.utils.discord.createMessage(cmd.channel.id, { embed: invalidArgsEmbed.code });
 	if (!cmd.args[1] && cmd.msg.attachments.length === 0) return caller.utils.discord.createMessage(cmd.channel.id, 'Please, provide a value.');
@@ -139,12 +141,13 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 			updated = await caller.db.updateConfig('statusType', type);
 			if (updated) {
 				const config = await caller.db.getConfig() as IConfig;
-				caller.bot.editStatus('online', {
-					name: config.status,
-					// @ts-ignore
-					type: type,
-					url: type === 1 ? cmd.args[2] : undefined
-				});
+				if (config.status)
+					caller.bot.editStatus('online', [{
+						name: config.status,
+						// @ts-ignore
+						type: type,
+						url: type === 1 ? cmd.args[2] : undefined
+					}]);
 
 				if (type === 1)
 					caller.db.updateConfig('statusURL', cmd.args[2]);

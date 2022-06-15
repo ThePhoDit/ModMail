@@ -77,6 +77,7 @@ interface IConfig {
 	};
 	commandsPermissions: Record<string, string[]>;
 	aliases: Record<string, string>;
+	categories: Record<string, string>;
 	notificationRole?: string;
 	embeds: {
 		creation: IEmbed;

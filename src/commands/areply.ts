@@ -2,24 +2,24 @@ import Command from '../lib/structures/Command';
 import MessageEmbed from '../lib/structures/MessageEmbed';
 import { COLORS } from '../Constants';
 import Axios from 'axios';
-import { Message, MessageFile } from 'eris';
+import { Message, FileContent } from 'eris';
 
 export default new Command('areply', async (caller, cmd, log) => {
 	if (!cmd.args[0] && cmd.msg.attachments.length === 0)
 		return caller.utils.discord.createMessage(cmd.channel.id, 'You must provide a reply.');
-	const files: MessageFile[] = [];
+	const files: FileContent[] = [];
 	if (cmd.msg.attachments.length > 0) for (const file of cmd.msg.attachments) await Axios.get<Buffer>(file.url, { responseType: 'arraybuffer' })
 		.then((response) => files.push({ file: response.data, name: file.filename }))
 		.catch(() => false);
 
 	const userEmbed = new MessageEmbed()
-		.setAuthor('Staff Reply', cmd.channel.guild.dynamicIconURL())
+		.setAuthor('Staff Reply', cmd.channel.guild.dynamicIconURL() || undefined)
 		.setColor(COLORS.RED)
 		.setDescription(cmd.args.join(' ') || 'No content provided.')
 		.setTimestamp();
 	if (files.length > 0) userEmbed.addField('Files', `This message contains ${files.length} file${files.length > 1 ? 's' : ''}`);
 	const channelEmbed = new MessageEmbed()
-		.setAuthor('Staff Reply', cmd.channel.guild.dynamicIconURL())
+		.setAuthor('Staff Reply', cmd.channel.guild.dynamicIconURL() || undefined)
 		.setColor(COLORS.GREEN)
 		.setDescription(cmd.args.join(' ') || 'No content provided.')
 		.setTimestamp();

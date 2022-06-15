@@ -2,7 +2,7 @@ import Mail from '../structures/Mail';
 import {
 	Message,
 	MessageContent,
-	MessageFile,
+	FileContent,
 	TextChannel,
 	User,
 	Constants,
@@ -27,7 +27,7 @@ class DiscordUtils {
 	 * @param {MessageFile|MessageFile[]} [file] - Discord Message File to send (optional)
 	 * @returns {Promise<Message|boolean>} - A Discord Message or false.
 	 */
-	async createMessage(channel: string, content: MessageContent, user = false, file?: MessageFile | MessageFile[]): Promise<Message | false> {
+	async createMessage(channel: string, content: MessageContent, user = false, file?: FileContent | FileContent[]): Promise<Message | false> {
 		if (user) {
 			const usr = this.caller.bot.users.get(channel) || await this.fetchUser(channel);
 			if (!usr) return false;

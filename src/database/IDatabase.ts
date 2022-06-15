@@ -6,6 +6,7 @@ export interface IDatabase {
 	createConfig(data: Partial<IConfig>): Promise<IConfig | null>;
 	getConfig(): Promise<IConfig | null>;
 	updateConfig(key: string, value: string | number | boolean , operation: 'SET' | 'PUSH' | 'PULL' | 'UNSET'): Promise<boolean> | false;
+	updateCompatibility(update: Partial<IConfig>): Promise<boolean>;
 	deleteConfig(): Promise<boolean>;
 	// Snippets
 	createSnippet(name: string, data: ISnippet): Promise<boolean>;

@@ -8,5 +8,5 @@ if (!process.env.MAIN_GUILD_ID) throw new Error('[BOT] No main guild ID found.')
 import Mail from './lib/structures/Mail';
 const Client = new Mail(process.env.BOT_TOKEN);
 
-// Login to Discord
+// Login to Discord.
 Client.login();

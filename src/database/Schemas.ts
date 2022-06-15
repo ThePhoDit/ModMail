@@ -190,6 +190,11 @@ const config = new Schema({
 		required: true,
 		default: {}
 	},
+	categories: {
+		type: Schema.Types.Mixed,
+		required: true,
+		default: {}
+	},
 	notificationRole: {
 		type: String
 	},

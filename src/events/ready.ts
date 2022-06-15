@@ -23,5 +23,8 @@ export default async (caller: Mail): Promise<void> => {
 		}, 300000); // 5 minutes
 	}
 
+	// Fix compatibility issues.
+	caller.fixCompatibility();
+
 	console.log(`[BOT] ${caller.bot.user.username} is ready.`);
 };

@@ -5,6 +5,7 @@ import { readdir } from 'fs';
 import { join } from 'path';
 import Command from './Command';
 import Mongo from '../../database/Mongo';
+import { IConfig } from '../types/Database';
 
 class Mail extends EventEmitter {
 	bot: Client;
@@ -18,6 +19,7 @@ class Mail extends EventEmitter {
 		this.token = token;
 		this.closingThreads = false;
 		this.bot = new Client(this.token, {
+			intents: 130815,
 			disableEvents: {
 				TYPING_START: true
 			},
@@ -83,7 +85,8 @@ class Mail extends EventEmitter {
 					props.options.aliases.forEach((alias) => {
 						this.aliases.set(alias, props.name);
 					});
-				} catch (e) {
+				} catch (e: unknown) {
+					// @ts-ignore
 					console.warn(`[Command Handler] Command ${file} failed to load.\nStack Trace: ${e.stack.split('\n', 5).join('\n')}`);
 				}
 			});
@@ -96,6 +99,24 @@ class Mail extends EventEmitter {
 	closingThreadsFunc(status: boolean): void {
 		this.closingThreads = status;
 	}
+
+	// Fix possible DB incompatibilities.
+	fixCompatibility() {
+		this.db.getConfig()
+			.then((config) => {
+				if (!config) return;
+				const updates: Partial<IConfig> = {};
+				// Categories update.
+				if (!config.categories) updates.categories = {};
+
+				if (Object.keys(updates).length > 0)
+					this.db.updateCompatibility(updates)
+						.then((response) => {
+							console.log(response ? 'Fixed DB compatibility issues.' : 'There was an error fixing DB compatibility errors.');
+						});
+			});
+	}
+
 }
 
 export default Mail;

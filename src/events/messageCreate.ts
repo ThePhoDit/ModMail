@@ -200,7 +200,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		cmd = caller.commands.get(config.aliases[command]);
 
 	// If no command is found, try to look for a snippet.
-	if (!cmd && log && config.snippets && config.snippets[command] && category.channels.has(msg.channel.id)) {
+	if (!cmd && log && config.snippets && config.snippets[command]) {
 		if (!caller.utils.misc.checkPermissions(msg.member!, 'snippet', config))
 			return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 

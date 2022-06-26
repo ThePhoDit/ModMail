@@ -10,13 +10,13 @@ const embedLimits = {
 };
 
 export default class MessageEmbed {
-	currentTotal = 0;
-	enforceLimits = true;
-	file: EmbedFile | undefined;
+	currentTotal = 0
+	enforceLimits = true
+	file: EmbedFile | undefined
 	code: EmbedCode = {
 		color: 0x7289da,
 		fields: [],
-	};
+	}
 
 	constructor(enforceLimits = true) {
 		if (!enforceLimits) this.enforceLimits = false;

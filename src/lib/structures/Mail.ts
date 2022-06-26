@@ -10,8 +10,8 @@ import { IConfig } from '../types/Database';
 class Mail extends EventEmitter {
 	bot: Client;
 	closingThreads: boolean;
-	commands: Map<string, Command>;
-	aliases: Map<string, string>;
+	commands: Map<string, Command>
+	aliases: Map<string, string>
 	utils = new UtilsManager(this);
 	db = Mongo.getDatabase(this);
 	constructor(private readonly token: string) {

@@ -13,7 +13,7 @@ export default new Command('reply', async (caller, cmd, log, config) => {
 		.catch(() => false);
 
 	let footer = config.embeds.userReply.footer;
-	// to avoid doing unnecessary requests, just 
+	// to avoid doing unnecessary requests, just do them if the footer contains $role$
 	if (config.embeds.userReply.footer.includes('$role$')) {
 		const sortedRoles = cmd.msg.member!.roles.map(r => cmd.channel.guild.roles.get(r)).sort((a, b) => {
 			return b!.position - a!.position;

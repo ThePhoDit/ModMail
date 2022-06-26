@@ -6,6 +6,7 @@ import { join } from 'path';
 import Command from './Command';
 import Mongo from '../../database/Mongo';
 import { IConfig } from '../types/Database';
+import {COLORS} from "../../Constants";
 
 class Mail extends EventEmitter {
 	bot: Client;
@@ -108,6 +109,28 @@ class Mail extends EventEmitter {
 				const updates: Partial<IConfig> = {};
 				// Categories update.
 				if (!config.categories) updates.categories = {};
+
+				// Customizable replies update.
+				if (!config.embeds.reply && !config.embeds.userReply)
+					Object.defineProperty(updates, 'embeds', {
+						value: Object.assign(config.embeds, {
+							reply: { color: COLORS.GREEN },
+							userReply: { footer: 'You will receive a message soon.', color: COLORS.RED }}),
+						enumerable: true
+					});
+				else {
+					if (!config.embeds.reply) Object.defineProperty(updates, 'embeds', {
+						value: Object.assign(config.embeds,{
+							reply: { color: COLORS.GREEN }}),
+						enumerable: true
+					});
+					if (!config.embeds.userReply)
+						Object.defineProperty(updates, 'embeds', {
+							value: Object.assign(config.embeds,{
+								userReply: { color: COLORS.RED, footer: 'You will receive a message soon.' }}),
+							enumerable: true
+						});
+				}
 
 				if (Object.keys(updates).length > 0)
 					this.db.updateCompatibility(updates)

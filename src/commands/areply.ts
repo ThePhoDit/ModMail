@@ -11,9 +11,9 @@ export default new Command('areply', async (caller, cmd, log, config) => {
 	if (cmd.msg.attachments.length > 0) for (const file of cmd.msg.attachments) await Axios.get<Buffer>(file.url, { responseType: 'arraybuffer' })
 		.then((response) => files.push({ file: response.data, name: file.filename }))
 		.catch(() => false);
-
-	// para evitar hacer solicitudes de roles innecesarias solo hacerlas si contiene $role$
+ 
 	let footer = config.embeds.userReply.footer;
+	// to avoid doing unnecessary requests, just do them if the footer contains $role$
 	if (config.embeds.userReply.footer.includes('$role$')) {
 		const sortedRoles = cmd.msg.member!.roles.map(r => cmd.channel.guild.roles.get(r)).sort((a, b) => {
 			return b!.position - a!.position;

@@ -34,10 +34,6 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 \`embed_contact_color\`: the color (hex code) of the embed sent to the user when the thread is created by a staff member.
 \`embed_contact_footer_text\`: the footer of the embed sent to the user when the thread is created by a staff member.
 \`embed_contact_footer_image\`: the footer image of the embed sent to the user when the thread is created by a staff member.
-\`embed_reply_color\`: the color (hex code) of the embed sent to the staff when a staff member replies to the user.
-\`embed_userReply_color\`: the color (hex code) of the embed sent to the user when a staff member replies to the user.
-\`embed_userReply_footer_text\`: the footer of the embed sent to the user when a staff member replies to the user (\`$role$\` will be replaced by the staff's highest role).
-\`embed_userReply_footer_image\`: the footer image of the embed sent to the user when when a staff member replies to the user.
 \`embed_closure_title\`: the title of the embed sent to the user when the thread is closed.
 \`embed_closure_thumbnail\`: the thumbnail of the embed sent to the user when the thread is closed ("none" to disable).
 \`embed_closure_description\`: the description of the embed sent to the user when the thread is closed.
@@ -316,47 +312,6 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 				return caller.utils.discord.createMessage(cmd.channel.id, 'Contact embed footer image updated.');
 			if (!updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The contact embed footer image could not be updated.');
-			break;
-
-		case 'embed_reply_color':
-			if (!(/^#[0-9A-F]{6}$/i.test(cmd.args[1])))
-				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to provide a valid hex color.');
-
-			updated = await caller.db.updateConfig('embeds.reply.color', cmd.args[1]);
-			if (updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'Reply embed color updated.');
-			if (!updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The reply embed color could not be updated.');
-			break;
-
-		case 'embed_userReply_footer_text':
-			updated = await caller.db.updateConfig('embeds.userReply.footer', cmd.args.slice(1).join(' '));
-			if (updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'User reply embed footer updated.');
-			if (!updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The user reply embed footer could not be updated.');
-			break;
-
-		case 'embed_userReply_footer_image':
-			if (!(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\\+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/gm.test(cmd.args[1])) && cmd.args[1] !== 'none')
-				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to provide a valid link.');
-
-			updated = await caller.db.updateConfig('embeds.userReply.footerImageURL', cmd.args[1] === 'none' ? '' : cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
-			if (updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'User reply embed footer image updated.');
-			if (!updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The user reply embed footer image could not be updated.');
-			break;
-
-		case 'embed_userReply_color':
-			if (!(/^#[0-9A-F]{6}$/i.test(cmd.args[1])))
-				return caller.utils.discord.createMessage(cmd.channel.id, 'You have to provide a valid hex color.');
-
-			updated = await caller.db.updateConfig('embeds.userReply.color', cmd.args[1]);
-			if (updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'User reply embed color updated.');
-			if (!updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The user reply embed color could not be updated.');
 			break;
 
 		case 'embed_closure_title':

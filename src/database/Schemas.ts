@@ -261,29 +261,6 @@ const config = new Schema({
 				default: COLORS.YELLOW
 			}
 		},
-		reply: {
-			color: {
-				type: String,
-				required: true,
-				default: COLORS.GREEN
-			}
-		},
-		userReply: {
-			footer: {
-				type: String,
-				required: true,
-				default: 'You will receive a message soon.',
-				maxlength: 2048
-			},
-			footerImageURL: {
-				type: String
-			},
-			color: {
-				type: String,
-				required: true,
-				default: COLORS.RED
-			}
-		},
 		closure: {
 			title: {
 				type: String,

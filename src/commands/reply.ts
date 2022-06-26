@@ -4,7 +4,7 @@ import { COLORS } from '../Constants';
 import Axios from 'axios';
 import { Message, FileContent } from 'eris';
 
-export default new Command('reply', async (caller, cmd, log) => {
+export default new Command('reply', async (caller, cmd, log, config) => {
 	if (!cmd.args[0] && cmd.msg.attachments.length === 0)
 		return caller.utils.discord.createMessage(cmd.channel.id, 'You must provide a reply.');
 	const files: FileContent[] = [];
@@ -12,15 +12,25 @@ export default new Command('reply', async (caller, cmd, log) => {
 		.then((response) => files.push({ file: response.data, name: file.filename }))
 		.catch(() => false);
 
+	let footer = config.embeds.userReply.footer;
+	// to avoid doing unnecessary requests, just do them if the footer contains $role$
+	if (config.embeds.userReply.footer.includes('$role$')) {
+		const sortedRoles = cmd.msg.member!.roles.map(r => cmd.channel.guild.roles.get(r)).sort((a, b) => {
+			return b!.position - a!.position;
+		});
+		footer = footer.replace('$role$', sortedRoles[0]!.name);
+	}
+
 	const userEmbed = new MessageEmbed()
 		.setAuthor(`${cmd.msg.author.username}#${cmd.msg.author.discriminator}`, cmd.msg.author.dynamicAvatarURL())
-		.setColor(COLORS.RED)
+		.setColor(config.embeds.userReply.color)
 		.setDescription(cmd.args.join(' ') || 'No content provided.')
+		.setFooter(footer, config.embeds.userReply.footerImageURL)
 		.setTimestamp();
 	if (files.length > 0) userEmbed.addField('Files', `This message contains ${files.length} file${files.length > 1 ? 's' : ''}`);
 	const channelEmbed = new MessageEmbed()
 		.setAuthor(`${cmd.msg.author.username}#${cmd.msg.author.discriminator}`, cmd.msg.author.dynamicAvatarURL())
-		.setColor(COLORS.GREEN)
+		.setColor(config.embeds.reply.color)
 		.setDescription(cmd.args.join(' ') || 'No content provided.')
 		.setTimestamp();
 

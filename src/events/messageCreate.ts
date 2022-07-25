@@ -106,11 +106,17 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 				}
 			});
 
+			if (!log)
+				return caller.utils.discord.createMessage(msg.author.id, 'Sorry, an error related to the DB has occurred when opening your thread. Please, contact an administrator.', true);
+
 			// Sends messages both to the user and the staff.
 			const userOpenEmbed = new MessageEmbed()
 				.setTitle(config.embeds.creation.title)
 				.setColor(config.embeds.creation.color)
-				.setDescription(config.embeds.creation.description)
+				.setDescription(config.embeds.creation.description
+					.replace('$logID', log.id)
+					.replace('$member', msg.author.username)
+				)
 				.setFooter(config.embeds.creation.footer, config.embeds.creation.footerImageURL)
 				.setTimestamp();
 			if (config.embeds.creation.thumbnail)

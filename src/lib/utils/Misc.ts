@@ -88,7 +88,12 @@ class MiscUtils {
 		const endingEmbed = new MessageEmbed()
 			.setTitle(config.embeds.closure.title)
 			.setColor(config.embeds.closure.color)
-			.setDescription(closureReason ? closureReason : log.closureMessage ? log.closureMessage : config.embeds.closure.description)
+			.setDescription(closureReason ?
+				closureReason : log.closureMessage ?
+					log.closureMessage : config.embeds.closure.description
+						.replace('$logID', log.id)
+						.replace('$member', log.recipient.username)
+			)
 			.setFooter(config.embeds.closure.footer, config.embeds.closure.footerImageURL)
 			.setTimestamp();
 		if (config.embeds.closure.thumbnail)

@@ -82,6 +82,8 @@ interface IConfig {
 	embeds: {
 		creation: IEmbed;
 		contact: IEmbed
+		reply: { color: string };
+		userReply: { footer: string; footerImageURL: string; color: string };
 		closure: IEmbed;
 		staff: IStaffEmbed;
 	};

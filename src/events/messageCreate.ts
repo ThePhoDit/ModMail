@@ -188,9 +188,9 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 	// Messages sent out of DMs.
 	const prefix = config.prefix;
 
-	// Gets a log (if any)
+	// Gets a log (if any). Note that this will log replies using a custom alias as INTERNAL.
 	log = await caller.db.getLog(msg.channel.id);
-	if (log && !(msg.content.startsWith(`${prefix}reply`) || msg.content.startsWith(`${prefix}r`)))
+	if (log && !config.excludeInternalLogs && !(msg.content.startsWith(`${prefix}reply`) || msg.content.startsWith(`${prefix}r`)))
 		caller.db.appendMessage(log._id, msg, 'INTERNAL');
 
 	if (!msg.content.startsWith(prefix)) return;

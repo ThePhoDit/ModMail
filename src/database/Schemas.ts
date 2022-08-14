@@ -198,6 +198,9 @@ const config = new Schema({
 	notificationRole: {
 		type: String
 	},
+	excludeInternalLogs: {
+		type: Boolean
+	},
 	embeds: {
 		creation: {
 			title: {

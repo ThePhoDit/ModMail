@@ -10,7 +10,7 @@ export default new Command('close', async (caller, cmd, log, config) => {
 		if (!delay)
 			return caller.utils.misc.closeThread(log!, config, cmd, cmd.args.join(' '));
 		if (delay < 600000 || delay > 259200000)
-			return caller.utils.discord.createMessage(cmd.channel.id, 'Please select a time within the range of 10 minutes an 3 days.');
+			return caller.utils.discord.createMessage(cmd.channel.id, 'Please select a time within the range of 10 minutes and 3 days.');
 
 		const closureDate = new Date(Date.now() + delay);
 		const closerUpdated = await caller.db.updateLog(log!._id, 'closer', {

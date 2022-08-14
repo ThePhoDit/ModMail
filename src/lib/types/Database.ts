@@ -79,6 +79,7 @@ interface IConfig {
 	aliases: Record<string, string>;
 	categories: Record<string, string>;
 	notificationRole?: string;
+	excludeInternalLogs?: boolean;
 	embeds: {
 		creation: IEmbed;
 		contact: IEmbed

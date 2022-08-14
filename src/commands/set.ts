@@ -22,6 +22,7 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 \`account_age\`: the age an account needs to have in order to open a new thread.
 \`guild_age\`: the time an account needs to have been inside the server in order to open a new thread.
 \`guild_age_id\`: the server ID where someone needs to have the required **guild_age**.
+\`exclude_internal_logs\`: stops logging all internal messages. It can either be true or false.
 \`embed_creation_title\`: the title of the embed sent to the user when the thread is opened.
 \`embed_creation_thumbnail\`: the thumbnail of the embed sent to the user when the thread is opened ("none" to disable).
 \`embed_creation_description\`: the description of the embed sent to the user when the thread is opened.
@@ -206,6 +207,14 @@ export default new Command('set', async (caller, cmd, _log, config) => {
 			updated = await caller.db.updateConfig('notificationRole', cmd.args[1] === 'none' ? '' : cmd.msg.roleMentions[0] || cmd.args[1], cmd.args[1] === 'none' ? 'UNSET' : 'SET');
 			if (updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The notification role has been updated.');
+			if (!updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, 'The notification role could not be updated.');
+			break;
+
+		case 'exclude_internal_logs':
+			updated = await caller.db.updateConfig('excludeInternalLogs', cmd.args[1].toLowerCase() === 'true');
+			if (updated)
+				return caller.utils.discord.createMessage(cmd.channel.id, cmd.args[1].toLowerCase() === 'true' ? 'Internal logs will now be excluded.' : 'Internal logs will now be included.');
 			if (!updated)
 				return caller.utils.discord.createMessage(cmd.channel.id, 'The notification role could not be updated.');
 			break;

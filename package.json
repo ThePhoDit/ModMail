@@ -3,6 +3,9 @@
   "version": "3.0.6",
   "description": "ModMail Bot for Discord.",
   "main": "prod/index.js",
+  "engines": {
+    "node": "16.x"
+  },
   "dependencies": {
     "axios": "^0.27.2",
     "dotenv": "^16.0.1",

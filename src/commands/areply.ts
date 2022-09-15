@@ -11,7 +11,7 @@ export default new Command('areply', async (caller, cmd, log, config) => {
 	if (cmd.msg.attachments.length > 0) for (const file of cmd.msg.attachments) await Axios.get<Buffer>(file.url, { responseType: 'arraybuffer' })
 		.then((response) => files.push({ file: response.data, name: file.filename }))
 		.catch(() => false);
- 
+
 	let footer = config.embeds.userReply.footer;
 	// to avoid doing unnecessary requests, just do them if the footer contains $role$
 	if (config.embeds.userReply.footer.includes('$role$')) {

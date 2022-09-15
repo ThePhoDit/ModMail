@@ -211,10 +211,21 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 
 		const snippet = config.snippets[command];
+
+		let footer = config.embeds.userReply.footer;
+		// to avoid doing unnecessary requests, just do them if the footer contains $role$
+		if (config.embeds.userReply.footer.includes('$role$')) {
+			const sortedRoles = msg.member!.roles.map(r => channel.guild.roles.get(r)).sort((a, b) => {
+				return b!.position - a!.position;
+			});
+			footer = footer.replace('$role$', sortedRoles[0]!.name);
+		}
+
 		const userEmbed = new MessageEmbed()
 			.setAuthor(snippet.anonymous ? 'Staff Reply' : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() || undefined : msg.author.dynamicAvatarURL())
 			.setColor(COLORS.RED)
 			.setDescription(snippet.content)
+			.setFooter(footer, config.embeds.userReply.footerImageURL)
 			.setTimestamp();
 		const channelEmbed = new MessageEmbed()
 			.setAuthor(snippet.anonymous ? 'Staff Reply' : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() || undefined : msg.author.dynamicAvatarURL())

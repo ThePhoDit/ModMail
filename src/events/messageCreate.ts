@@ -205,6 +205,8 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 	if (!cmd && config.aliases && config.aliases[command])
 		cmd = caller.commands.get(config.aliases[command]);
 
+	const channel = msg.channel as TextChannel;
+
 	// If no command is found, try to look for a snippet.
 	if (!cmd && log && config.snippets && config.snippets[command]) {
 		if (!caller.utils.misc.checkPermissions(msg.member!, 'snippet', config))
@@ -247,7 +249,6 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 	if (!caller.utils.misc.checkPermissions(msg.member!, cmd.name, config))
 		return caller.utils.discord.createMessage(msg.channel.id, 'Invalid permissions.');
 	if (cmd.options.threadOnly && (!log)) return;
-	const channel = msg.channel as TextChannel;
 
 	try {
 		await cmd.run(caller, { msg, args, channel, category }, log, config);

@@ -7,7 +7,7 @@ import Command from './Command';
 import Mongo from '../../database/Mongo';
 import { IConfig } from '../types/Database';
 import { COLORS } from '../../Constants';
-import {getLang, initialize as LangsInitializer} from '../../langs/manager';
+import {currentLang, getLang, initialize as LangsInitializer} from '../../langs/manager';
 import enUS from '../../langs/locales/en-US';
 import lang from '../../langs/lang';
 
@@ -54,8 +54,8 @@ class Mail extends EventEmitter {
 			if (error) return console.error(error);
 			console.log(`[Event Handler] Loading a total of ${files.length} files.`);
 
-			files.forEach(async (file) => {
-				if (!file.endsWith('.js') || file.endsWith('.map')) return;
+			for (const file of files) {
+				if (!file.endsWith('.js') || file.endsWith('.map')) continue;
 				let event = await import(`${join(__dirname, '..', '..', 'events')}/${file}`);
 				const name = file.split('.')[0];
 				console.log(`[Event Handler] Loading event ${name}.`);
@@ -72,7 +72,7 @@ class Mail extends EventEmitter {
 				} finally {
 					delete require.cache[join(__dirname, '..', '..', 'events')];
 				}
-			});
+			}
 		});
 
 		readdir(join(__dirname, '..', '..', 'commands'), (error, files) => {
@@ -127,7 +127,7 @@ class Mail extends EventEmitter {
 					Object.defineProperty(updates, 'embeds', {
 						value: Object.assign(config.embeds, {
 							reply: { color: COLORS.GREEN },
-							userReply: { footer: 'You will receive a message soon.', color: COLORS.RED }
+							userReply: { footer: currentLang().messages.messageSoon, color: COLORS.RED }
 						}),
 						enumerable: true
 					});
@@ -141,7 +141,7 @@ class Mail extends EventEmitter {
 					if (!config.embeds.userReply)
 						Object.defineProperty(updates, 'embeds', {
 							value: Object.assign(config.embeds, {
-								userReply: { color: COLORS.RED, footer: 'You will receive a message soon.' }
+								userReply: { color: COLORS.RED, footer: currentLang().messages.messageSoon }
 							}),
 							enumerable: true
 						});

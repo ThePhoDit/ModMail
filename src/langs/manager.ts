@@ -5,7 +5,7 @@
  *
  * @author holasoyender
  * @license MIT
- * @version 0.0.17-pre1
+ * @version 0.0.17-pre2
  */
 
 import {debug} from 'console';
@@ -36,9 +36,6 @@ export const loadLangs = async /*char*/(__debug?: boolean): Promise<void> => {
 			langs[lang_name] = lang_func;
 			__debug ? debug('[lang-worker] loaded language %s', lang_name) : null;
 		}
-
-
-
 };
 
 /**

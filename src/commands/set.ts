@@ -5,54 +5,24 @@ import { COLORS, STATUSES } from '../Constants';
 import { AnyChannel, TextChannel } from 'eris';
 import ms from 'ms';
 import {IConfig} from '../lib/types/Database';
-//TODO: LANGS
+
 export default new Command('set', async (caller, cmd, _log, config) => {
 	const invalidArgsEmbed = new MessageEmbed()
-		.setTitle('Settings you can change of the bot.')
+		.setTitle(caller.lang.commands.set.title)
 		.setColor(COLORS.GREEN)
-		.setDescription(`
-\`avatar\`: attach an image to change the bot avatar.
-\`username\`: change the bot username, not the nickname.
-\`prefix\`: change the bot prefix (max length: 4).
-\`category\`: send the ID of the category where you want new threads to open.
-\`logs\`: send the ID of the channel where you want your logs to go to.
-\`status\`: change the displayed status of your bot.
-\`status_type\`: change the displayed status type of your bot.
-\`notification\`: send the role ID you want to be mentioned on thread creation.
-\`account_age\`: the age an account needs to have in order to open a new thread.
-\`guild_age\`: the time an account needs to have been inside the server in order to open a new thread.
-\`guild_age_id\`: the server ID where someone needs to have the required **guild_age**.
-\`exclude_internal_logs\`: stops logging all internal messages. It can either be true or false.
-\`embed_creation_title\`: the title of the embed sent to the user when the thread is opened.
-\`embed_creation_thumbnail\`: the thumbnail of the embed sent to the user when the thread is opened ("none" to disable).
-\`embed_creation_description\`: the description of the embed sent to the user when the thread is opened.
-\`embed_creation_color\`: the color (hex code) of the embed sent to the user when the thread is opened.
-\`embed_creation_footer_text\`: the footer of the embed sent to the user when the thread is opened.
-\`embed_creation_footer_image\`: the footer image of the embed sent to the user when the thread is opened.
-\`embed_contact_title\`: the title of the embed sent to the user when the thread is created by a staff member.
-\`embed_contact_thumbnail\`: the thumbnail of the embed sent to the user when the thread is created by a staff member ("none" to disable).
-\`embed_contact_description\`: the description of the embed sent to the user when the thread is created by a staff member.
-\`embed_contact_color\`: the color (hex code) of the embed sent to the user when the thread is created by a staff member.
-\`embed_contact_footer_text\`: the footer of the embed sent to the user when the thread is created by a staff member.
-\`embed_contact_footer_image\`: the footer image of the embed sent to the user when the thread is created by a staff member.
-\`embed_reply_color\`: the color (hex code) of the embed sent to the staff when a staff member replies to the user.
-\`embed_userReply_color\`: the color (hex code) of the embed sent to the user when a staff member replies to the user.
-\`embed_userReply_footer_text\`: the footer of the embed sent to the user when a staff member replies to the user (\`$role$\` will be replaced by the staff's highest role).
-\`embed_userReply_footer_image\`: the footer image of the embed sent to the user when when a staff member replies to the user.
-\`embed_closure_title\`: the title of the embed sent to the user when the thread is closed.
-\`embed_closure_thumbnail\`: the thumbnail of the embed sent to the user when the thread is closed ("none" to disable).
-\`embed_closure_description\`: the description of the embed sent to the user when the thread is closed.
-\`embed_closure_color\`: the color (hex code) of the embed sent to the user when the thread is closed.
-\`embed_closure_footer_text\`: the footer of the embed sent to the user when the thread is closed.
-\`embed_closure_footer_image\`: the footer image of the embed sent to the user when the thread is closed.
-\`embed_staff_title\`: the title of the embed sent to the staff when the thread is opened.
-\`embed_staff_color\`: the color (hex code) of the embed sent to the staff when the thread is opened.`)
-		.addField('Usage', `${config.prefix}set {parameter} {value}`);
+		.setDescription(caller.lang.commands.set.description)
+		.addField(caller.lang.commands.set.usage.title, caller.lang.commands.set.usage.description.replace('%p', config.prefix));
 
 	if (cmd.channel.guild.dynamicIconURL())
 		invalidArgsEmbed.setThumbnail(cmd.channel.guild.dynamicIconURL() as string);
 
 	if (!cmd.args[0]) return caller.utils.discord.createMessage(cmd.channel.id, { embed: invalidArgsEmbed.code });
+	/*
+	*
+	* Todo: Acabar este comando
+	*  tengo sueño, mañana acabo este comando y hago que la pr sea oficial
+	*
+	* */
 	if (!cmd.args[1] && cmd.msg.attachments.length === 0) return caller.utils.discord.createMessage(cmd.channel.id, 'Please, provide a value.');
 
 	let updated: boolean;

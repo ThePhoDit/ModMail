@@ -3,6 +3,7 @@ export default interface lang {
 
 	messages: {
 		setupCompleted: string;
+		messageSoon: string;
 	}
 
 	commands: {
@@ -145,6 +146,14 @@ export default interface lang {
 			removed: string
 			removedError: string
 			unknownCommand: string
+		},
+		set: {
+			title: string;
+			description: string;
+			usage: {
+				title: string;
+				description: string;
+			}
 		}
 	},
 

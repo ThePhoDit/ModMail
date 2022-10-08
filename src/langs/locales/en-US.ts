@@ -5,6 +5,7 @@ export default {
 
 	messages: {
 		setupCompleted: 'Server completely setup. A ModMail category has been created for you.',
+		messageSoon: 'You will receive a message soon.'
 	},
 
 	commands: {
@@ -147,6 +148,50 @@ export default {
 			removed: 'The permission has been removed successfully.',
 			removedError: 'There was an error removing the permission.',
 			unknownCommand: 'I couldn\'t find a command with that name.',
+		},
+		set: {
+			title: 'Settings you can change of the bot.',
+			description: `
+			\`avatar\`: attach an image to change the bot avatar.
+			\`username\`: change the bot username, not the nickname.
+			\`prefix\`: change the bot prefix (max length: 4).
+			\`category\`: send the ID of the category where you want new threads to open.
+			\`logs\`: send the ID of the channel where you want your logs to go to.
+			\`status\`: change the displayed status of your bot.
+			\`status_type\`: change the displayed status type of your bot.
+			\`notification\`: send the role ID you want to be mentioned on thread creation.
+			\`account_age\`: the age an account needs to have in order to open a new thread.
+			\`guild_age\`: the time an account needs to have been inside the server in order to open a new thread.
+			\`guild_age_id\`: the server ID where someone needs to have the required **guild_age**.
+			\`exclude_internal_logs\`: stops logging all internal messages. It can either be true or false.
+			\`embed_creation_title\`: the title of the embed sent to the user when the thread is opened.
+			\`embed_creation_thumbnail\`: the thumbnail of the embed sent to the user when the thread is opened ("none" to disable).
+			\`embed_creation_description\`: the description of the embed sent to the user when the thread is opened.
+			\`embed_creation_color\`: the color (hex code) of the embed sent to the user when the thread is opened.
+			\`embed_creation_footer_text\`: the footer of the embed sent to the user when the thread is opened.
+			\`embed_creation_footer_image\`: the footer image of the embed sent to the user when the thread is opened.
+			\`embed_contact_title\`: the title of the embed sent to the user when the thread is created by a staff member.
+			\`embed_contact_thumbnail\`: the thumbnail of the embed sent to the user when the thread is created by a staff member ("none" to disable).
+			\`embed_contact_description\`: the description of the embed sent to the user when the thread is created by a staff member.
+			\`embed_contact_color\`: the color (hex code) of the embed sent to the user when the thread is created by a staff member.
+			\`embed_contact_footer_text\`: the footer of the embed sent to the user when the thread is created by a staff member.
+			\`embed_contact_footer_image\`: the footer image of the embed sent to the user when the thread is created by a staff member.
+			\`embed_reply_color\`: the color (hex code) of the embed sent to the staff when a staff member replies to the user.
+			\`embed_userReply_color\`: the color (hex code) of the embed sent to the user when a staff member replies to the user.
+			\`embed_userReply_footer_text\`: the footer of the embed sent to the user when a staff member replies to the user (\`$role$\` will be replaced by the staff's highest role).
+			\`embed_userReply_footer_image\`: the footer image of the embed sent to the user when when a staff member replies to the user.
+			\`embed_closure_title\`: the title of the embed sent to the user when the thread is closed.
+			\`embed_closure_thumbnail\`: the thumbnail of the embed sent to the user when the thread is closed ("none" to disable).
+			\`embed_closure_description\`: the description of the embed sent to the user when the thread is closed.
+			\`embed_closure_color\`: the color (hex code) of the embed sent to the user when the thread is closed.
+			\`embed_closure_footer_text\`: the footer of the embed sent to the user when the thread is closed.
+			\`embed_closure_footer_image\`: the footer image of the embed sent to the user when the thread is closed.
+			\`embed_staff_title\`: the title of the embed sent to the staff when the thread is opened.
+			\`embed_staff_color\`: the color (hex code) of the embed sent to the staff when the thread is opened.`,
+			usage: {
+				title: 'Usage',
+				description: '%pset {setting} {value}',
+			}
 		}
 	},
 

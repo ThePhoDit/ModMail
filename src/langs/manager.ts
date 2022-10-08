@@ -5,7 +5,7 @@
  *
  * @author holasoyender
  * @license MIT
- * @version 0.0.17-dev
+ * @version 0.0.17-pre1
  */
 
 import {debug} from 'console';

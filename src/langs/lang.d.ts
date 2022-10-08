@@ -79,6 +79,72 @@ export default interface lang {
 			notFound: string;
 			success: string;
 			error: string;
+		},
+		contact: {
+			noUser: string;
+			notFound: string;
+			isBot: string;
+			channeLError: string;
+			DMError: string;
+			alreadyContacted: string;
+			success: string;
+			message: string;
+			error: string;
+		},
+		close: {
+			invalidTime: string;
+			closerError: string;
+			closerUpdateError: string;
+			title: string;
+			description: string;
+		},
+		category: {
+			noCategory: string;
+			exists: string;
+			notFoundID: string;
+			notFoundName: string
+			created: string
+			createdError: string
+			deleted: string
+			deletedError: string
+			empty: string
+			list: string
+			help: string
+		},
+		blacklist: {
+			noOption: string;
+			noUser: string;
+			notFound: string;
+			alreadyBlacklisted: string;
+			notBlacklisted: string;
+			blacklisted: string;
+			unblacklisted: string;
+			error: string;
+		},
+		alias: {
+			noOption: string
+			noName: string
+			reservedAlias: string
+			noCommand: string
+			invalidCommand: string
+			alreadyExists: string
+			created: string
+			createdError: string
+			unknownAlias: string
+			deleted: string
+			deletedError: string
+		},
+		permission: {
+			noLevel: string
+			noOption: string
+			noID: string
+			alreadyExists: string
+			notExists: string
+			added: string
+			addedError: string
+			removed: string
+			removedError: string
+			unknownCommand: string
 		}
 	},
 

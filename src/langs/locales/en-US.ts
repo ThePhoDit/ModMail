@@ -81,6 +81,72 @@ export default {
 			notFound: 'I couldn\'t find a message with that ID.',
 			success: 'The message has been deleted successfully.',
 			error: 'There was an error deleting the message.'
+		},
+		contact: {
+			noUser: 'You must provide a user mention or ID.',
+			notFound: 'I couldn\'t find a user with that ID.',
+			isBot: 'You can\'t contact a bot.',
+			channeLError: 'There was an error creating the channel.',
+			DMError: 'There was an error sending the DM.',
+			alreadyContacted: 'You already have a thread with that user.',
+			success: 'The thread has been created successfully.',
+			message: 'Hello %s, this is a ModMail thread created by %m. You can reply to this message to send a message to the server staff.',
+			error: 'There was an error creating the thread.'
+		},
+		close: {
+			invalidTime: 'You must provide a valid time (Between 10 minutes and 3 days).',
+			closerError: 'There was an error scheduling the thread closer.',
+			closerUpdateError: 'There was an error updating the thread\'s closer.',
+			title: 'Closure Scheduled',
+			description: 'This thread will be closed on `%s` if no new replies are sent.'
+		},
+		category: {
+			noCategory: 'You must provide a category name.',
+			exists: 'A category with that name already exists.',
+			notFoundID: 'I couldn\'t find a category with that ID.',
+			notFoundName: 'I couldn\'t find a category with that name.',
+			created: 'The category has been created successfully.',
+			createdError: 'There was an error creating the category.',
+			deleted: 'The category has been deleted successfully.',
+			deletedError: 'There was an error deleting the category.',
+			empty: 'I couldn\'t find any categories in this server.',
+			list: 'NAME | CATEGORY',
+			help: 'Select `create`, `delete` or `list`.'
+		},
+		blacklist: {
+			noOption: 'You must provide an option (`add` or `remove`).',
+			noUser: 'You must provide a user mention or ID.',
+			notFound: 'I couldn\'t find a user with that ID.',
+			alreadyBlacklisted: 'That user is already blacklisted.',
+			notBlacklisted: 'That user is not blacklisted.',
+			blacklisted: 'The user has been blacklisted successfully.',
+			unblacklisted: 'The user has been unblacklisted successfully.',
+			error: 'There was an error updating the blacklist.'
+		},
+		alias: {
+			noOption: 'You must provide an option (`add` or `remove`).',
+			noName: 'You must provide an alias name.',
+			reservedAlias: 'That alias name is reserved.',
+			noCommand: 'You must provide a command name to be aliased.',
+			invalidCommand: 'That command doesn\'t exist.',
+			alreadyExists: 'An alias with that name already exists.',
+			created: 'The alias has been created successfully.',
+			createdError: 'There was an error creating the alias.',
+			unknownAlias: 'I couldn\'t find an alias with that name.',
+			deleted: 'The alias has been deleted successfully.',
+			deletedError: 'There was an error deleting the alias.',
+		},
+		permission: {
+			noLevel: 'Please, select the level o command name.\nLevels: **regular**, **support** and **admin**.\nUsage: %ppermission {levelName/commandName} {add/remove} {role ID/user ID}',
+			noOption: 'You must provide an option (`add` or `remove`).',
+			noID: 'You must provide a role or user ID.',
+			alreadyExists: 'That role or user already has that permission level.',
+			notExists: 'That role or user doesn\'t have that permission level.',
+			added: 'The permission has been added successfully.',
+			addedError: 'There was an error adding the permission.',
+			removed: 'The permission has been removed successfully.',
+			removedError: 'There was an error removing the permission.',
+			unknownCommand: 'I couldn\'t find a command with that name.',
 		}
 	},
 

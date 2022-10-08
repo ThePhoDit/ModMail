@@ -2,7 +2,7 @@ import Command from '../lib/structures/Command';
 
 export default new Command('category', async (caller, cmd, _log, config) => {
 	if (!cmd.args[0]) return caller.utils.discord.createMessage(cmd.channel.id, 'Select `create`, `edit`, `delete` or `list`.');
-	if (!cmd.args[1] && ['show', 'list'].indexOf(cmd.args[0]) < 0) return caller.utils.discord.createMessage(cmd.channel.id, 'Provide a category name.');
+	if (!cmd.args[1] && ['show', 'list'].indexOf(cmd.args[0]) < 0) return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.noCategory);
 
 	const categoryID = config.categories[cmd.args[1]];
 
@@ -18,38 +18,38 @@ export default new Command('category', async (caller, cmd, _log, config) => {
 		case 'create': case 'add': case 'new':
 			// Check if the category exists
 			if (categoryID)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'A category with that name already exists.');
+				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.exists);
 
 			if (!cmd.args[2])
-				return caller.utils.discord.createMessage(cmd.channel.id, 'Provide a valid category ID.');
+				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.notFoundID);
 			category = caller.bot.getChannel(cmd.args[2]);
 			if (!category || category.type !== 4 || category.guild.id !== process.env.MAIN_GUILD_ID)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'Provide a valid category ID.');
+				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.notFoundID);
 
 			updated = await caller.db.updateConfig(`categories.${cmd.args[1]}`, category.id);
 			if (updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The category has been added.');
+				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.created);
 			if (!updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The category could not be added.');
+				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.createdError);
 			break;
 
 		// Delete a snippet.
 		case 'delete': case 'remove': case 'rmv':
 			if (!categoryID)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'A category with that name does not exist.');
+				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.notFoundName);
 			// eslint-disable-next-line no-case-declarations
 			updated = await caller.db.updateConfig(`categories.${cmd.args[1]}`, '', 'UNSET');
 			if (updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The category has been removed.');
+				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.deleted);
 			if (!updated)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'The category could not be removed.');
+				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.deletedError);
 			break;
 
 		// Show all snippets
 		case 'list': case 'show':
 			categoriesRAW = config.categories;
 			if (!categoriesRAW || Object.keys(categoriesRAW).length === 0)
-				return caller.utils.discord.createMessage(cmd.channel.id, 'No categories found.');
+				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.empty);
 
 			for (const name of Object.keys(categoriesRAW))
 				// @ts-ignore
@@ -60,10 +60,10 @@ export default new Command('category', async (caller, cmd, _log, config) => {
 				categories.push(list.splice(0, s));
 			// Send the list
 			for (const s of categories)
-				caller.utils.discord.createMessage(cmd.channel.id, `\`\`\`\nNAME | CATEGORY\n-----------\n${s.join('\n')}\`\`\``);
+				caller.utils.discord.createMessage(cmd.channel.id, `\`\`\`\n${caller.lang.commands.category.list}\n-----------\n${s.join('\n')}\`\`\``);
 			break;
 		default:
-			caller.utils.discord.createMessage(cmd.channel.id, 'Select `create`, `delete` or `list`.');
+			caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.category.help);
 			break;
 	}
 },

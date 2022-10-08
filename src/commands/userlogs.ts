@@ -2,11 +2,11 @@ import Command from '../lib/structures/Command';
 
 export default new Command('userlogs', async (caller, cmd) => {
 	if (!process.env.LOGS_URL)
-		return caller.utils.discord.createMessage(cmd.channel.id, 'You have no logs URL configured.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.errors.noLogsUrl);
 	if (!cmd.args[0])
-		return caller.utils.discord.createMessage(cmd.channel.id, 'Provide a user ID.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.errors.noUserIDProvided);
 	const links = await caller.db.getUserLogs(cmd.args[0]);
-	if (!links) return caller.utils.discord.createMessage(cmd.channel.id, 'No logs found.');
+	if (!links) return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.errors.noLogsFound);
 
 	// Send multiple messages if there are too many logs.
 	const linksMap = links.map((log) => `<${process.env.LOGS_URL}log?id=${log._id}>`);

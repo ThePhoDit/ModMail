@@ -6,7 +6,10 @@ import { join } from 'path';
 import Command from './Command';
 import Mongo from '../../database/Mongo';
 import { IConfig } from '../types/Database';
-import {COLORS} from "../../Constants";
+import { COLORS } from '../../Constants';
+import {getLang, initialize as LangsInitializer} from '../../langs/manager';
+import enUS from '../../langs/locales/en-US';
+import lang from '../../langs/lang';
 
 class Mail extends EventEmitter {
 	bot: Client;
@@ -15,6 +18,7 @@ class Mail extends EventEmitter {
 	aliases: Map<string, string>;
 	utils = new UtilsManager(this);
 	db = Mongo.getDatabase(this);
+	lang = enUS;
 	constructor(private readonly token: string) {
 		super();
 		this.token = token;
@@ -37,6 +41,14 @@ class Mail extends EventEmitter {
 
 		this.utils = new UtilsManager(this);
 		this.db = Mongo.getDatabase(this);
+
+		LangsInitializer(false, true).then(() => {
+			if(getLang(process.env.LANG || 'en-US', false))
+				this.lang = getLang(process.env.LANG || 'en-US', false) as lang;
+		}).catch((err) => {
+			console.error(err);
+			process.exit(1);
+		});
 
 		readdir(join(__dirname, '..', '..', 'events'), async (error, files) => {
 			if (error) return console.error(error);
@@ -115,19 +127,22 @@ class Mail extends EventEmitter {
 					Object.defineProperty(updates, 'embeds', {
 						value: Object.assign(config.embeds, {
 							reply: { color: COLORS.GREEN },
-							userReply: { footer: 'You will receive a message soon.', color: COLORS.RED }}),
+							userReply: { footer: 'You will receive a message soon.', color: COLORS.RED }
+						}),
 						enumerable: true
 					});
 				else {
 					if (!config.embeds.reply) Object.defineProperty(updates, 'embeds', {
-						value: Object.assign(config.embeds,{
-							reply: { color: COLORS.GREEN }}),
+						value: Object.assign(config.embeds, {
+							reply: { color: COLORS.GREEN }
+						}),
 						enumerable: true
 					});
 					if (!config.embeds.userReply)
 						Object.defineProperty(updates, 'embeds', {
-							value: Object.assign(config.embeds,{
-								userReply: { color: COLORS.RED, footer: 'You will receive a message soon.' }}),
+							value: Object.assign(config.embeds, {
+								userReply: { color: COLORS.RED, footer: 'You will receive a message soon.' }
+							}),
 							enumerable: true
 						});
 				}

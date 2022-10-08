@@ -36,6 +36,51 @@ export default {
 			empty: 'There are no snippets in this server.',
 			list: 'NAME | CONTENT',
 			help: 'Select `create`, `edit`, `delete` or `list`.'
+		},
+		reply: {
+			noReply: 'You must provide a reply message.'
+		},
+		rename: {
+			noName: 'You must provide a new name for the thread.',
+			success: 'The thread has been renamed to `%s`.',
+			error: 'There was an error renaming the thread.'
+		},
+		ping: 'My ping is `%sms`.',
+		nsfw: {
+			enabled: 'This thread is now marked as NSFW.',
+			disabled: 'This thread is no longer marked as NSFW.',
+			enableError: 'There was an error marking this thread as NSFW.',
+			disableError: 'There was an error removing the NSFW mark from this thread.'
+		},
+		note: {
+			noNote: 'Provide a note or write `removenote` to remove the note.',
+			success: 'The note has been updated.',
+			error: 'The note could not be updated.'
+		},
+		move: {
+			noCategory: 'You must provide a category name.',
+			notFound: 'I couldn\'t find a category with that name.',
+			alreadyInCategory: 'This thread is already in that category.',
+			noPermission: 'I don\'t have permission to move this thread to that category.',
+			success: 'The thread has been moved to `%s`.',
+			error: 'There was an error moving the thread.'
+		},
+		help: {
+			title: 'ModMail by ThePhoDit',
+			description: 'ModMail is a Discord bot that allows you to communicate with your users via DMs.\nIf you want to check out the commands of the bot, read our docs at https://modmail.phodit.xyz',
+		},
+		edit: {
+			noMessage: 'You must provide a message ID.',
+			noContent: 'You must provide a new content for the message.',
+			notFound: 'I couldn\'t find a message with that ID.',
+			success: 'The message has been edited successfully.',
+			error: 'There was an error editing the message.'
+		},
+		delete: {
+			noMessage: 'You must provide a message ID.',
+			notFound: 'I couldn\'t find a message with that ID.',
+			success: 'The message has been deleted successfully.',
+			error: 'There was an error deleting the message.'
 		}
 	},
 

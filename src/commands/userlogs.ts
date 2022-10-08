@@ -15,7 +15,7 @@ export default new Command('userlogs', async (caller, cmd) => {
 		linksArray.push(linksMap.splice(0, 20));
 
 	for (const logs of linksArray)
-		caller.utils.discord.createMessage(cmd.channel.id, logs.join('\n'));
+		await caller.utils.discord.createMessage(cmd.channel.id, logs.join('\n'));
 },
 {
 	level: 'SUPPORT',

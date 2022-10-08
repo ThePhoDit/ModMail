@@ -34,6 +34,51 @@ export default interface lang {
 			empty: string;
 			list: string;
 			help: string;
+		},
+		reply: {
+			noReply: string;
+		},
+		rename: {
+			noName: string;
+			success: string;
+			error: string;
+		},
+		ping: string;
+		nsfw: {
+			enabled: string;
+			disabled: string;
+			enableError: string;
+			disableError: string;
+		},
+		note: {
+			noNote: string;
+			success: string;
+			error: string;
+		}
+		move: {
+			noCategory: string;
+			notFound: string;
+			alreadyInCategory: string;
+			noPermission: string;
+			success: string;
+			error: string;
+		},
+		help: {
+			title: string;
+			description: string;
+		},
+		edit: {
+			noMessage: string;
+			noContent: string;
+			notFound: string;
+			success: string;
+			error: string;
+		},
+		delete: {
+			noMessage: string;
+			notFound: string;
+			success: string;
+			error: string;
 		}
 	},
 

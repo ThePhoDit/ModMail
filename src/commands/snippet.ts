@@ -45,7 +45,7 @@ export default new Command('snippet', async (caller, cmd, _log, config) => {
 				return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.snippet.invalidText);
 
 			caller.db.editSnippet(cmd.args[1], cmd.args.slice(2).join(' '));
-			caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.snippet.updated.replace('%s', cmd.args[1]));
+			await caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.snippet.updated.replace('%s', cmd.args[1]));
 			break;
 
 		// Delete a snippet.
@@ -73,10 +73,10 @@ export default new Command('snippet', async (caller, cmd, _log, config) => {
 				snippets.push(list.splice(0, s));
 			// Send the list
 			for (const s of snippets)
-				caller.utils.discord.createMessage(cmd.channel.id, `\`\`\`\n${caller.lang.commands.snippet.list}\n-----------\n${s.join('\n')}\`\`\``);
+				await caller.utils.discord.createMessage(cmd.channel.id, `\`\`\`\n${caller.lang.commands.snippet.list}\n-----------\n${s.join('\n')}\`\`\``);
 			break;
 		default:
-			caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.snippet.help);
+			await caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.snippet.help);
 			break;
 	}
 },

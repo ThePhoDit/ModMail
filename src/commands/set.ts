@@ -5,7 +5,7 @@ import { COLORS, STATUSES } from '../Constants';
 import { AnyChannel, TextChannel } from 'eris';
 import ms from 'ms';
 import {IConfig} from '../lib/types/Database';
-
+//TODO: LANGS
 export default new Command('set', async (caller, cmd, _log, config) => {
 	const invalidArgsEmbed = new MessageEmbed()
 		.setTitle('Settings you can change of the bot.')

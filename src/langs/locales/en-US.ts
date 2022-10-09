@@ -191,7 +191,83 @@ export default {
 			usage: {
 				title: 'Usage',
 				description: '%pset {setting} {value}',
-			}
+			},
+			noValue: 'You must provide a value.',
+			noImage: 'You must attach an image.',
+			avatar: {
+				error: 'There was an error changing the bot avatar.',
+				success: 'The bot avatar has been changed successfully.',
+			},
+			unknownError: 'There was an error changing the bot settings.',
+			usernameSuccess: 'The bot username has been changed successfully.',
+			prefix: {
+				success: 'The bot prefix has been changed successfully.',
+				error: 'The bot prefix must be between 1 and 4 characters.',
+				unknownError: 'There was an error changing the bot prefix.',
+			},
+			category: {
+				success: 'The bot category has been changed successfully.',
+				error: 'The bot category must be a valid category ID.',
+				unknownError: 'There was an error changing the bot category.',
+			},
+			logs: {
+				success: 'The bot logs channel has been changed successfully.',
+				error: 'The bot logs channel must be a valid channel ID.',
+				unknownError: 'There was an error changing the bot logs channel.',
+			},
+			status: {
+				success: 'The bot status has been changed successfully.',
+				unknownError: 'There was an error changing the bot status.',
+			},
+			statusType: {
+				success: 'The bot status type has been changed successfully.',
+				unknownError: 'There was an error changing the bot status type.',
+				invalidTwitch: 'The URL must be a valid Twitch or YouTube URL.',
+				help: 'The status type must be one of the following: `playing`, `streaming`, `listening`, `watching`.',
+			},
+			accountAge: {
+				invalidFormat: 'You have to select a valid format. For example, 1d = 1 day / 30m = 30 minutes. To disable it, just type `0`.\nValid letters: m / h / d / w / y',
+				success: 'The account age restriction has been changed successfully.',
+				unknownError: 'There was an error changing the account age restriction.',
+			},
+			guildAge: {
+				invalidGuild: 'I am not in that server, please select one in which i am in.',
+				success: 'The guild age ID has been changed successfully.',
+				unknownError: 'There was an error changing the guild age ID.',
+			},
+			notification: {
+				success: 'The notification role has been changed successfully.',
+				unknownError: 'There was an error changing the notification role.',
+			},
+			excludeInternalLogs: {
+				isExcluded: 'The internal logs will now be excluded',
+				isIncluded: 'The internal logs will now be included',
+				unknownError: 'There was an error changing the internal logs exclusion.',
+			},
+			embedCreation: {
+				success: (iin) => `The embed creation ${iin} has been changed successfully.`,
+				unknownError: (iin) => `There was an error changing the embed creation ${iin}.`,
+			},
+			embedContact: {
+				success: (iin) => `The embed contact ${iin} has been changed successfully.`,
+				unknownError: (iin) => `There was an error changing the embed contact ${iin}.`,
+			},
+			embedReply: {
+				success: (iin) => `The embed reply ${iin} has been changed successfully.`,
+				unknownError: (iin) => `There was an error changing the embed reply ${iin}.`,
+			},
+			embedUserReply: {
+				success: (iin) => `The embed user reply ${iin} has been changed successfully.`,
+				unknownError: (iin) => `There was an error changing the embed user reply ${iin}.`,
+			},
+			embedClosure: {
+				success: (iin) => `The embed closure ${iin} has been changed successfully.`,
+				unknownError: (iin) => `There was an error changing the embed closure ${iin}.`,
+			},
+			embedStaff: {
+				success: (iin) => `The embed staff ${iin} has been changed successfully.`,
+				unknownError: (iin) => `There was an error changing the embed staff ${iin}.`,
+			},
 		}
 	},
 
@@ -205,7 +281,7 @@ export default {
 		},
 		threadClosed: {
 			title: 'Thread closed.',
-			description: 'The thread from `%u` has been closed by %s',
+			description: 'The thread from `% u` has been closed by %s',
 		},
 		staffReply: 'Staff Reply',
 	},
@@ -222,5 +298,7 @@ export default {
 		noLogsUrl: 'You have no logs URL configured.',
 		noUserIDProvided: 'You must provide a valid user ID.',
 		noLogsFound: 'I could not find any logs for this user.',
+		invalidHexColor: 'You must provide a valid hex color.',
+		invalidLink: 'You must provide a valid link.',
 	}
 } as lang;

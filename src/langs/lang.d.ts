@@ -153,6 +153,82 @@ export default interface lang {
 			usage: {
 				title: string;
 				description: string;
+			},
+			noValue: string;
+			noImage: string;
+			avatar: {
+				error: string;
+				success: string;
+			}
+			unknownError: string;
+			usernameSuccess: string;
+			prefix: {
+				success: string;
+				error: string;
+				unknownError: string;
+			}
+			category: {
+				success: string;
+				error: string;
+				unknownError: string;
+			}
+			logs: {
+				success: string;
+				error: string;
+				unknownError: string;
+			}
+			status: {
+				success: string;
+				unknownError: string;
+			}
+			statusType: {
+				success: string;
+				unknownError: string;
+				invalidTwitch: string;
+				help: string;
+			}
+			accountAge: {
+				invalidFormat: string;
+				success: string;
+				unknownError: string;
+			}
+			guildAge: {
+				invalidGuild: string;
+				success: string;
+				unknownError: string;
+			}
+			notification: {
+				success: string;
+				unknownError: string;
+			}
+			excludeInternalLogs: {
+				isExcluded: string;
+				isIncluded: string;
+				unknownError: string;
+			}
+			embedCreation: {
+				success: (iin: string) => string;
+				unknownError: (iin: string) => string;
+			}
+			embedContact: {
+				success: (iin: string) => string;
+				unknownError: (iin: string) => string;
+			}
+			embedReply: {
+				success: (iin: string) => string;
+				unknownError: (iin: string) => string;
+			}
+			embedUserReply: {
+				success: (iin: string) => string;
+				unknownError: (iin: string) => string;
+			}
+			embedClosure: {
+				success: (iin: string) => string;
+				unknownError: (iin: string) => string;
+			}
+			embedStaff: {
+				success: (iin: string) => string;
+				unknownError: (iin: string) => string;
 			}
 		}
 	},
@@ -184,5 +260,7 @@ export default interface lang {
 		noLogsUrl: string;
 		noUserIDProvided: string;
 		noLogsFound: string;
+		invalidHexColor: string;
+		invalidLink: string;
 	},
 }

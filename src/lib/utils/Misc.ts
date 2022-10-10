@@ -4,6 +4,7 @@ import { IConfig, LogDocument } from '../types/Database';
 import Command from '../structures/Command';
 import { CommandData } from '../types/Commands';
 import MessageEmbed from '../structures/MessageEmbed';
+import {currentLang} from '../../langs/manager';
 
 class MiscUtils {
 	private caller: Mail;
@@ -73,15 +74,17 @@ class MiscUtils {
 	}
 
 	async closeThread(log: LogDocument, config: IConfig | null, cmd?: CommandData, closureReason?: string): Promise<void> {
+
+		const lang = currentLang();
 		if (!config) return;
 		if (cmd) {
-			const closed = await cmd.channel.delete('Thread Closed').catch(() => false);
+			const closed = await cmd.channel.delete(lang.embeds.threadClosed.title).catch(() => false);
 			if (closed === false) return;
 		}
 		else {
 			const channel = await this.caller.bot.getChannel(log.channelID) as TextChannel;
 			if (!channel) return;
-			const closed = await channel.delete('Thread Closed').catch(() => false);
+			const closed = await channel.delete(lang.embeds.threadClosed.title).catch(() => false);
 			if (closed === false) return;
 		}
 
@@ -102,9 +105,9 @@ class MiscUtils {
 
 		if (config.logsChannelID) {
 			const logEmbed = new MessageEmbed()
-				.setTitle('Thread Closed')
+				.setTitle(lang.embeds.threadClosed.title)
 				.setColor('#FF0000')
-				.setDescription(`The thread from \`${log.recipient.username}#${log.recipient.discriminator}\` has been closed by ${cmd ? cmd.msg.author.username : log.closer?.username || 'USER NOT FOUND'}.${process.env.LOGS_URL ? `\n${process.env.LOGS_URL}log?id=${log!._id}` : ''}`);
+				.setDescription(lang.embeds.threadClosed.description.replace('%u', `${log.recipient.username}#${log.recipient.discriminator}`).replace('%s', `${cmd ? cmd.msg.author.username : log.closer?.username || 'USER NOT FOUND'}.${process.env.LOGS_URL ? `\n${process.env.LOGS_URL}log?id=${log!._id}` : ''}`));
 			this.caller.utils.discord.createMessage(config.logsChannelID, { embed: logEmbed.code });
 		}
 

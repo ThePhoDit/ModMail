@@ -133,8 +133,8 @@ export default class Mongo implements IDatabase {
 		filter.open = open;
 		filter.botID = this.caller.bot.user.id;
 
-		// @ts-ignore
 		return await Log.findOne(filter)
+			// @ts-ignore
 			.then((data: LogDocument) => data as LogDocument)
 			.catch(() => null);
 	}
@@ -143,7 +143,7 @@ export default class Mongo implements IDatabase {
 		return await Log.find({
 			'recipient.id': userID,
 			botID: this.caller.bot.user.id
-		})
+		})// @ts-ignore
 			.then((data: LogDocument[]) => {
 				if (data.length === 0) return null;
 				return data as LogDocument[];
@@ -156,7 +156,7 @@ export default class Mongo implements IDatabase {
 			botID: this.caller.bot.user.id,
 			open: true,
 			scheduledClosure: { $lte: new Date() }
-		})
+		})// @ts-ignore
 			.then((data: LogDocument[]) => {
 				if (data.length === 0) return null;
 				return data as LogDocument[];

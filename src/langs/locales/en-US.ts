@@ -87,7 +87,7 @@ export default {
 			noUser: 'You must provide a user mention or ID.',
 			notFound: 'I couldn\'t find a user with that ID.',
 			isBot: 'You can\'t contact a bot.',
-			channeLError: 'There was an error creating the channel.',
+			channelError: 'There was an error creating the channel.',
 			DMError: 'There was an error sending the DM.',
 			alreadyContacted: 'You already have a thread with that user.',
 			success: 'The thread has been created successfully.',
@@ -284,6 +284,8 @@ export default {
 			description: 'The thread from `% u` has been closed by %s',
 		},
 		staffReply: 'Staff Reply',
+		user: 'User',
+		pastThreads: 'Past Threads'
 	},
 
 	errors: {

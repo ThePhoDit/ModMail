@@ -20,7 +20,7 @@ export default new Command('contact', async (caller, cmd, _log, config) => {
 			topic: user.id
 		});
 		if (!serverChannel)
-			return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.contact.channeLError);
+			return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.contact.channelError);
 
 		// User Embed
 		const userEmbed = new MessageEmbed()

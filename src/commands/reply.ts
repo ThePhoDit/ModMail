@@ -6,7 +6,7 @@ import { Message, FileContent } from 'eris';
 
 export default new Command('reply', async (caller, cmd, log, config) => {
 	if (!cmd.args[0] && cmd.msg.attachments.length === 0)
-		return caller.utils.discord.createMessage(cmd.channel.id, 'You must provide a reply.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.reply.noReply);
 	const files: FileContent[] = [];
 	if (cmd.msg.attachments.length > 0) for (const file of cmd.msg.attachments) await Axios.get<Buffer>(file.url, { responseType: 'arraybuffer' })
 		.then((response) => files.push({ file: response.data, name: file.filename }))
@@ -24,20 +24,20 @@ export default new Command('reply', async (caller, cmd, log, config) => {
 	const userEmbed = new MessageEmbed()
 		.setAuthor(`${cmd.msg.author.username}#${cmd.msg.author.discriminator}`, cmd.msg.author.dynamicAvatarURL())
 		.setColor(config.embeds.userReply.color)
-		.setDescription(cmd.args.join(' ') || 'No content provided.')
+		.setDescription(cmd.args.join(' ') || caller.lang.embeds.noContent)
 		.setFooter(footer, config.embeds.userReply.footerImageURL)
 		.setTimestamp();
-	if (files.length > 0) userEmbed.addField('Files', `This message contains ${files.length} file${files.length > 1 ? 's' : ''}`);
+	if (files.length > 0) userEmbed.addField(caller.lang.embeds.files, caller.lang.embeds.containsFiles.replace('%n', files.length.toString()).replace('%s', files.length > 1 ? 's' : ''));
 	const channelEmbed = new MessageEmbed()
 		.setAuthor(`${cmd.msg.author.username}#${cmd.msg.author.discriminator}`, cmd.msg.author.dynamicAvatarURL())
 		.setColor(config.embeds.reply.color)
-		.setDescription(cmd.args.join(' ') || 'No content provided.')
+		.setDescription(cmd.args.join(' ') || caller.lang.embeds.noContent)
 		.setTimestamp();
 
 	const guildMsg = await caller.utils.discord.createMessage(cmd.channel.id, { embed: channelEmbed.code }, false, files);
 	const userMsg = await caller.utils.discord.createMessage(log!.recipient.id, { embed: userEmbed.code }, true, files);
 	if (!(guildMsg || userMsg))
-		return caller.utils.discord.createMessage(cmd.channel.id, 'There has been an error responding to the user.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.errors.unknown);
 
 	// Remove schedules if any.
 	if (log!.closureMessage) caller.db.updateLog(log!._id, 'closureMessage', '', 'UNSET');
@@ -45,10 +45,10 @@ export default new Command('reply', async (caller, cmd, log, config) => {
 		caller.db.updateLog(log!._id, 'scheduledClosure', '', 'UNSET');
 		caller.db.updateLog(log!._id, 'closer', '', 'UNSET');
 		const closureCancellationEmbed = new MessageEmbed()
-			.setTitle('Closure Cancelled')
-			.setDescription('This ticket will no longer be closed due to ticket activity.')
+			.setTitle(caller.lang.embeds.closureCancelled.title)
+			.setDescription(caller.lang.embeds.closureCancelled.description)
 			.setColor(COLORS.YELLOW);
-		caller.utils.discord.createMessage(cmd.channel.id, { embed: closureCancellationEmbed.code });
+		await caller.utils.discord.createMessage(cmd.channel.id, { embed: closureCancellationEmbed.code });
 	}
 
 	// Add log to the DB.

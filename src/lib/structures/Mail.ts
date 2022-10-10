@@ -6,7 +6,10 @@ import { join } from 'path';
 import Command from './Command';
 import Mongo from '../../database/Mongo';
 import { IConfig } from '../types/Database';
-import {COLORS} from "../../Constants";
+import { COLORS } from '../../Constants';
+import { currentLang, getLang, initialize as LangsInitializer } from '../../langs/manager';
+import enUS from '../../langs/locales/en-US';
+import lang from '../../langs/lang';
 
 class Mail extends EventEmitter {
 	bot: Client;
@@ -15,6 +18,7 @@ class Mail extends EventEmitter {
 	aliases: Map<string, string>;
 	utils = new UtilsManager(this);
 	db = Mongo.getDatabase(this);
+	lang = enUS;
 	constructor(private readonly token: string) {
 		super();
 		this.token = token;
@@ -38,12 +42,26 @@ class Mail extends EventEmitter {
 		this.utils = new UtilsManager(this);
 		this.db = Mongo.getDatabase(this);
 
+		LangsInitializer(false, true).then(() => {
+			if (getLang(process.env.BOT_LANG || 'en-US', false)) {
+				this.lang = getLang(process.env.BOT_LANG || 'en-US', false) as lang;
+				console.log('[lang-worker] Loaded language: ' + this.lang.name);
+			}
+			else {
+				this.lang = enUS;
+				console.log('[lang-worker] Language not found, using en-US.');
+			}
+		}).catch((err) => {
+			console.error(err);
+			process.exit(1);
+		});
+
 		readdir(join(__dirname, '..', '..', 'events'), async (error, files) => {
 			if (error) return console.error(error);
 			console.log(`[Event Handler] Loading a total of ${files.length} files.`);
 
-			files.forEach(async (file) => {
-				if (!file.endsWith('.js') || file.endsWith('.map')) return;
+			for (const file of files) {
+				if (!file.endsWith('.js') || file.endsWith('.map')) continue;
 				let event = await import(`${join(__dirname, '..', '..', 'events')}/${file}`);
 				const name = file.split('.')[0];
 				console.log(`[Event Handler] Loading event ${name}.`);
@@ -60,7 +78,7 @@ class Mail extends EventEmitter {
 				} finally {
 					delete require.cache[join(__dirname, '..', '..', 'events')];
 				}
-			});
+			}
 		});
 
 		readdir(join(__dirname, '..', '..', 'commands'), (error, files) => {
@@ -115,19 +133,22 @@ class Mail extends EventEmitter {
 					Object.defineProperty(updates, 'embeds', {
 						value: Object.assign(config.embeds, {
 							reply: { color: COLORS.GREEN },
-							userReply: { footer: 'You will receive a message soon.', color: COLORS.RED }}),
+							userReply: { footer: currentLang().messages.messageSoon, color: COLORS.RED }
+						}),
 						enumerable: true
 					});
 				else {
 					if (!config.embeds.reply) Object.defineProperty(updates, 'embeds', {
-						value: Object.assign(config.embeds,{
-							reply: { color: COLORS.GREEN }}),
+						value: Object.assign(config.embeds, {
+							reply: { color: COLORS.GREEN }
+						}),
 						enumerable: true
 					});
 					if (!config.embeds.userReply)
 						Object.defineProperty(updates, 'embeds', {
-							value: Object.assign(config.embeds,{
-								userReply: { color: COLORS.RED, footer: 'You will receive a message soon.' }}),
+							value: Object.assign(config.embeds, {
+								userReply: { color: COLORS.RED, footer: currentLang().messages.messageSoon }
+							}),
 							enumerable: true
 						});
 				}

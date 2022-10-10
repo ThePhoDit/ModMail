@@ -1,28 +1,28 @@
 import Command from '../lib/structures/Command';
-import {CategoryChannel } from "eris";
+import {CategoryChannel } from 'eris';
 
 export default new Command('move', async (caller, cmd, _log, config) => {
 	if (!cmd.args[0])
-		return caller.utils.discord.createMessage(cmd.channel.id, 'Provide a category name.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.move.noCategory);
 	const categoryID = config.categories[cmd.args[0]];
 	if (!categoryID)
-		return caller.utils.discord.createMessage(cmd.channel.id, 'There is no category configured with such name.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.move.notFound);
 
 	const category = caller.bot.getChannel(categoryID);
 	if (!category || !(category as CategoryChannel).permissionsOf(caller.bot.user.id).has(BigInt(60432)))
-		return caller.utils.discord.createMessage(cmd.channel.id, 'There is no category configured with such name or I do not have permissions to access it.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.move.notFound);
 	if (category.id === cmd.channel.parentID)
-		return caller.utils.discord.createMessage(cmd.channel.id, 'This thread is already in the selected category.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.move.alreadyInCategory);
 
 	// Check permissions to modify current channel's permissions.
 	if (!cmd.channel.permissionsOf(caller.bot.user.id).has(BigInt(60432)))
-		return caller.utils.discord.createMessage(cmd.channel.id, 'I do not have enough permissions to move this channel.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.move.noPermission);
 
 	const updated = cmd.channel.edit({ parentID: category.id })
 		.then(() => true)
 		.catch(() => false);
 	if (!updated)
-		return caller.utils.discord.createMessage(cmd.channel.id, 'The channel could not be moved.');
+		return caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.move.error);
 
 	// Sync the permissions
 	// Deletes the previous channel permissions.
@@ -32,7 +32,7 @@ export default new Command('move', async (caller, cmd, _log, config) => {
 	for (const permission of (category as CategoryChannel).permissionOverwrites.values())
 		cmd.channel.editPermission(permission.id, permission.allow, permission.deny, permission.type);
 
-	caller.utils.discord.createMessage(cmd.channel.id, 'Thread moved.');
+	caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.move.success.replace('%s', (category as {name: string}).name));
 },
 {
 	level: 'ADMIN',

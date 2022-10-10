@@ -1,6 +1,6 @@
 {
   "name": "modmail",
-  "version": "3.0.6",
+  "version": "3.0.7",
   "description": "ModMail Bot for Discord.",
   "main": "prod/index.js",
   "engines": {

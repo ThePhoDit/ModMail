@@ -71,7 +71,7 @@ export const currentLang = (): lang => {
 };
 
 /**
- * Initialize the languaje manager worker.
+ * Initialize the language manager worker.
  * @param {boolean} __debug - Weather to print debug messages or not.
  * @param {boolean} __throw - Weather to throw an error if the manager fails to load or not.
  * @returns {boolean} - returns true if the manager was loaded successfully.

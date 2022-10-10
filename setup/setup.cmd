@@ -20,7 +20,7 @@ echo Please, indicate your ModMail logger URL if there's any (if not, just press
 set /p logs_url=""
 echo LOGS_URL=%logs_url% >> ../.env
 
-echo Please, choose a languaje for the bot (en-US, es-ES).
+echo Please, choose a language for the bot (en-US, es-ES).
 set /p lang=""
 echo BOT_LANG=%lang% >> ../.env
 

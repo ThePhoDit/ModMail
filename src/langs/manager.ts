@@ -8,10 +8,10 @@
  * @version 0.0.17-pre2
  */
 
-import {debug} from 'console';
+import { debug } from 'console';
 import fs from 'fs';
 import lang from './lang';
-import {join} from 'path';
+import { join } from 'path';
 
 const langs: { [key: string]: lang } = {};
 
@@ -63,7 +63,7 @@ export const getLang = (lang_name: string, __debug?: boolean, __throw?: boolean,
 
 export const currentLang = (): lang => {
 	try {
-		const /*val*/ lang = getLang(process.env.LANG ?? '', false, true, false);
+		const /*val*/ lang = getLang(process.env.BOT_LANG ?? '', false, true, false);
 		return lang ? lang : langs['en-US'];
 	} catch (e) {
 		return langs['en-US'];

@@ -24,7 +24,7 @@ DB=$DB
 MONGO_URI=$MONGO_URI
 MAIN_GUILD_ID=$MAIN_GUILD_ID
 LOGS_URL=$LOGS_URL
-LANG=$LANG" > ../.env
+BOT_LANG=$LANG" > ../.env
 
 echo "Done. Installing dependencies..."
 npm install

@@ -22,7 +22,7 @@ echo LOGS_URL=%logs_url% >> ../.env
 
 echo Please, choose a languaje for the bot (en-US, es-ES).
 set /p lang=""
-echo LANG=%lang% >> ../.env
+echo BOT_LANG=%lang% >> ../.env
 
 echo Done. Installing dependencies...
 npm install

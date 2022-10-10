@@ -7,7 +7,7 @@ import Command from './Command';
 import Mongo from '../../database/Mongo';
 import { IConfig } from '../types/Database';
 import { COLORS } from '../../Constants';
-import {currentLang, getLang, initialize as LangsInitializer} from '../../langs/manager';
+import { currentLang, getLang, initialize as LangsInitializer } from '../../langs/manager';
 import enUS from '../../langs/locales/en-US';
 import lang from '../../langs/lang';
 
@@ -43,8 +43,14 @@ class Mail extends EventEmitter {
 		this.db = Mongo.getDatabase(this);
 
 		LangsInitializer(false, true).then(() => {
-			if(getLang(process.env.LANG || 'en-US', false))
-				this.lang = getLang(process.env.LANG || 'en-US', false) as lang;
+			if (getLang(process.env.BOT_LANG || 'en-US', false)) {
+				this.lang = getLang(process.env.BOT_LANG || 'en-US', false) as lang;
+				console.log('[lang-worker] Loaded language: ' + this.lang.name);
+			}
+			else {
+				this.lang = enUS;
+				console.log('[lang-worker] Language not found, using en-US.');
+			}
 		}).catch((err) => {
 			console.error(err);
 			process.exit(1);

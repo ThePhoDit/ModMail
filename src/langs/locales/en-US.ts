@@ -281,7 +281,7 @@ export default {
 		},
 		threadClosed: {
 			title: 'Thread closed.',
-			description: 'The thread from `% u` has been closed by %s',
+			description: 'The thread from `%u` has been closed by %s',
 		},
 		staffReply: 'Staff Reply',
 		user: 'User',

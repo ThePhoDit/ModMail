@@ -281,7 +281,7 @@ export default {
 		},
 		threadClosed: {
 			title: 'Ticket cerrado.',
-			description: 'El ticket de `% u` ha sido cerrado por %s',
+			description: 'El ticket de `%u` ha sido cerrado por %s',
 		},
 		staffReply: 'Respuesta del Staff',
 		user: 'Usuario',

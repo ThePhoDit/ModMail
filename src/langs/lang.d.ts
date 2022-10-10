@@ -85,7 +85,7 @@ export default interface lang {
 			noUser: string;
 			notFound: string;
 			isBot: string;
-			channeLError: string;
+			channelError: string;
 			DMError: string;
 			alreadyContacted: string;
 			success: string;
@@ -246,6 +246,8 @@ export default interface lang {
 			description: string;
 		};
 		staffReply: string;
+		user: string;
+		pastThreads: string;
 	}
 
 	errors: {

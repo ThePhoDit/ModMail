@@ -87,7 +87,7 @@ export default {
 			noUser: 'Debes proporcionar una mención de usuario o una ID.',
 			notFound: 'No he encontrado a un usuario con esa ID.',
 			isBot: 'No puedes contactar a un bot.',
-			channeLError: 'Ha ocurrido un error al crear el canal.',
+			channelError: 'Ha ocurrido un error al crear el canal.',
 			DMError: 'Ha ocurrido un error al enviar el MD.',
 			alreadyContacted: 'Ya tienes un ticket con ese usuario.',
 			success: 'El ticket se ha creado correctamente.',
@@ -284,6 +284,8 @@ export default {
 			description: 'El ticket de `% u` ha sido cerrado por %s',
 		},
 		staffReply: 'Respuesta del Staff',
+		user: 'Usuario',
+		pastThreads: 'Tickets Pasados'
 	},
 
 	errors: {

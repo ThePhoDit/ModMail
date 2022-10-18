@@ -5,7 +5,7 @@ export default new Command('rename', async (caller, cmd) => {
 	cmd.channel.edit({
 		name: cmd.args.join()
 	})
-		.then(() => caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.rename.success))
+		.then(() => caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.rename.success.replace('%s', cmd.args.join())))
 		.catch(() => caller.utils.discord.createMessage(cmd.channel.id, caller.lang.commands.rename.error));
 },
 {

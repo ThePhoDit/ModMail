@@ -144,7 +144,7 @@ export default {
 			alreadyExists: "Die rol of gebruiker heeft dat toestemmingsniveau al.",
 			notExists: "Die rol of gebruiker heeft dat toestemmingsniveau niet.",
 			added: "De toestemming is succesvol toegevoegd.",
-			addedError: "Er is een fout opgetreden bij het toevoegen van de permissie.
+			addedError: "Er is een fout opgetreden bij het toevoegen van de permissie.,
 			removed: "De permissie is succesvol verwijderd.",
 			removedError: "Er is een fout opgetreden bij het verwijderen van de permissie.",
 			unknownCommand: 'Ik kon geen commando met die naam vinden',

@@ -10,7 +10,7 @@ export default {
 
 	commands: {
 		unsubscribe: {
-			success: 'Je bent gedeabonneerd uit deze thread.,
+			success: 'Je bent gedeabonneerd uit deze thread.',
 			notSubscribed: 'Je bent niet geabonneerd op deze thread.',
 			error: 'Er is een fout opgetreden bij het afmelden van deze thread.',
 		},
@@ -68,7 +68,7 @@ export default {
 		},
 		help: {
 			title: 'ModMail by ThePhoDit',
-			description: 'ModMail is een Discord bot waarmee je met je gebruikers kunt communiceren via DM's. Als je de commando's van de bot wilt bekijken, lees dan onze docs op https://modmail.phodit.xyz.',
+			description: 'ModMail is een Discord bot waarmee je met je gebruikers kunt communiceren via DM\'s. Als je de commando\'s van de bot wilt bekijken, lees dan onze docs op https://modmail.phodit.xyz.',
 		},
 		edit: {
 			noMessage: 'Je moet een bericht-ID opgeven.',

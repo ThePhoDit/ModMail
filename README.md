@@ -22,6 +22,7 @@ You can check the commands [here](https://modmail.phodit.xyz/commands/).
 The currently available languages are:
  - English (United States) `en-US`
  - Español (España) `es-ES`
+ - Dutch (Nederlands) `nl-NL`
 
 ## How to translate?
 

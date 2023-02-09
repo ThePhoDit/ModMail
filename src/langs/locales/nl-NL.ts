@@ -226,7 +226,7 @@ export default {
 				help: 'Het statustype moet een van de volgende zijn: `playing`, `streaming`, `listening`, `watching`.',
 			},
 			accountAge: {
-				invalidFormat: 'U moet een geldig formaat kiezen. Bijvoorbeeld, 1d = 1 dag / 30m = 30 minuten. Om het uit te schakelen, typ je gewoon `0`.\nValide letters: m / h / d / w / y'.,
+				invalidFormat: 'U moet een geldig formaat kiezen. Bijvoorbeeld, 1d = 1 dag / 30m = 30 minuten. Om het uit te schakelen, typ je gewoon `0`.\nValide letters: m / h / d / w / y.',
 				success: 'De leeftijdsbeperking is succesvol gewijzigd.',
 				unknownError: 'Er was een fout bij het veranderen van de leeftijdsbeperking',
 			},

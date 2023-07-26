@@ -11,7 +11,7 @@ When a user DMs the bot, a channel that only the staff can see is created in the
 
 ## How do I setup the bot?
 
-Please, read the documentaion at https://modmail.phodit.xyz/ and check the installation section.
+Please, read the documentation at https://modmail.phodit.xyz/ and check the installation section.
 
 ## What are the bot commands?
 
@@ -23,6 +23,7 @@ The currently available languages are:
  - English (United States) `en-US`
  - Español (España) `es-ES`
  - Dutch (Nederlands) `nl-NL`
+ - Ukrainian (Ukraine) `uk`
 
 ## How to translate?
 

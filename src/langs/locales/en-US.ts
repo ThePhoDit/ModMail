@@ -231,7 +231,7 @@ export default {
 				unknownError: 'There was an error changing the account age restriction.',
 			},
 			guildAge: {
-				invalidGuild: 'I am not in that server, please select one in which i am in.',
+				invalidGuild: 'I am not in that server, please select one in which I am in.',
 				success: 'The guild age ID has been changed successfully.',
 				unknownError: 'There was an error changing the guild age ID.',
 			},

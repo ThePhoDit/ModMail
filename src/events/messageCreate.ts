@@ -81,7 +81,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 			}
 
 			// Creates the channel on the main server.
-			const channel = await caller.utils.discord.createChannel(process.env.MAIN_GUILD_ID!, `${msg.author.username}-${msg.author.discriminator}`, 'GUILD_TEXT', {
+			const channel = await caller.utils.discord.createChannel(process.env.MAIN_GUILD_ID!, `${msg.author.username}${msg.author.discriminator === '0' ? '' : `-${msg.author.discriminator}`}`, 'GUILD_TEXT', {
 				parentID: category.id,
 				topic: msg.author.id
 			});
@@ -126,7 +126,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 				.setThumbnail(msg.author.dynamicAvatarURL())
 				.setColor(config.embeds.staff.color)
 				.setDescription(msg.content  || caller.lang.embeds.noContent)
-				.addField(caller.lang.embeds.user, `${msg.author.username}#${msg.author.discriminator} \`[${msg.author.id}]\``)
+				.addField(caller.lang.embeds.user, `${msg.author.username}${msg.author.discriminator === '0' ? '' : `#${msg.author.discriminator}`} \`[${msg.author.id}]\``)
 				.addField(caller.lang.embeds.pastThreads, (await caller.db.numberOfPreviousLogs(msg.author.id)).toString())
 				.setTimestamp();
 
@@ -154,7 +154,7 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 				return caller.utils.discord.createMessage(msg.author.id, caller.lang.errors.unknown, true);
 
 			const guildEmbed = new MessageEmbed()
-				.setAuthor(`${msg.author.username}#${msg.author.discriminator}`, msg.author.dynamicAvatarURL())
+				.setAuthor(`${msg.author.username}${msg.author.discriminator === '0' ? '' : `#${msg.author.discriminator}`}`, msg.author.dynamicAvatarURL())
 				.setColor(COLORS.RED)
 				.setDescription(msg.content || caller.lang.embeds.noContent)
 				.setTimestamp();
@@ -224,13 +224,13 @@ export default async (caller: Mail, msg: Message): Promise<unknown> => {
 		}
 
 		const userEmbed = new MessageEmbed()
-			.setAuthor(snippet.anonymous ? caller.lang.embeds.staffReply : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() || undefined : msg.author.dynamicAvatarURL())
+			.setAuthor(snippet.anonymous ? caller.lang.embeds.staffReply : `${msg.author.username}${msg.author.discriminator === '0' ? '' : `#${msg.author.discriminator}`}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() || undefined : msg.author.dynamicAvatarURL())
 			.setColor(COLORS.RED)
 			.setDescription(snippet.content)
 			.setFooter(footer, config.embeds.userReply.footerImageURL)
 			.setTimestamp();
 		const channelEmbed = new MessageEmbed()
-			.setAuthor(snippet.anonymous ? caller.lang.embeds.staffReply : `${msg.author.username}#${msg.author.discriminator}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() || undefined : msg.author.dynamicAvatarURL())
+			.setAuthor(snippet.anonymous ? caller.lang.embeds.staffReply : `${msg.author.username}${msg.author.discriminator === '0' ? '' : `#${msg.author.discriminator}`}`, snippet.anonymous ? (msg.channel as TextChannel).guild.dynamicIconURL() || undefined : msg.author.dynamicAvatarURL())
 			.setColor(COLORS.LIGHT_BLUE)
 			.setDescription(snippet.content)
 			.setTimestamp();

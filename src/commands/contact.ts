@@ -15,7 +15,7 @@ export default new Command('contact', async (caller, cmd, _log, config) => {
 	const openLog = await caller.db.getLog(user.id, 'USER');
 	if (!openLog) {
 		// Creates the channel on the main server.
-		const serverChannel = await caller.utils.discord.createChannel(process.env.MAIN_GUILD_ID!, `${user.username}-${user.discriminator}`, 'GUILD_TEXT', {
+		const serverChannel = await caller.utils.discord.createChannel(process.env.MAIN_GUILD_ID!, `${user.username}${user.discriminator === '0' ? '' : `-${user.discriminator}`}`, 'GUILD_TEXT', {
 			parentID: config.mainCategoryID,
 			topic: user.id
 		});

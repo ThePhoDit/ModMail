@@ -141,7 +141,7 @@ class DiscordUtils {
 				const user = this.caller.bot.users.get(p1);
 				if (!user)
 					return match;
-				return `@${user.username}${user.discriminator == '0' ? '' : `#${user.discriminator}`}`;
+				return `@${user.username}${user.discriminator === '0' ? '' : `#${user.discriminator}`}`;
 			}))
 			.replace(/<#([0-9]+)>/g, ((match, p1): string => {
 				const channel = this.caller.bot.getChannel(p1);

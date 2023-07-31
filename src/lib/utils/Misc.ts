@@ -107,7 +107,7 @@ class MiscUtils {
 			const logEmbed = new MessageEmbed()
 				.setTitle(lang.embeds.threadClosed.title)
 				.setColor('#FF0000')
-				.setDescription(lang.embeds.threadClosed.description.replace('%u', `${log.recipient.username}${log.recipient.discriminator == '0' ? '' : `#${log.recipient.discriminator}`}`).replace('%s', `${cmd ? cmd.msg.author.username : log.closer?.username || 'USER NOT FOUND'}.${process.env.LOGS_URL ? `\n${process.env.LOGS_URL}log?id=${log!._id}` : ''}`));
+				.setDescription(lang.embeds.threadClosed.description.replace('%u', `${log.recipient.username}${log.recipient.discriminator === '0' ? '' : `#${log.recipient.discriminator}`}`).replace('%s', `${cmd ? cmd.msg.author.username : log.closer?.username || 'USER NOT FOUND'}.${process.env.LOGS_URL ? `\n${process.env.LOGS_URL}log?id=${log!._id}` : ''}`));
 			this.caller.utils.discord.createMessage(config.logsChannelID, { embed: logEmbed.code });
 		}
 

@@ -22,14 +22,14 @@ export default new Command('reply', async (caller, cmd, log, config) => {
 	}
 
 	const userEmbed = new MessageEmbed()
-		.setAuthor(`${cmd.msg.author.username}${cmd.msg.author.discriminator == '0' ? '' : `#${cmd.msg.author.discriminator}`}`, cmd.msg.author.dynamicAvatarURL())
+		.setAuthor(`${cmd.msg.author.username}${cmd.msg.author.discriminator === '0' ? '' : `#${cmd.msg.author.discriminator}`}`, cmd.msg.author.dynamicAvatarURL())
 		.setColor(config.embeds.userReply.color)
 		.setDescription(cmd.args.join(' ') || caller.lang.embeds.noContent)
 		.setFooter(footer, config.embeds.userReply.footerImageURL)
 		.setTimestamp();
 	if (files.length > 0) userEmbed.addField(caller.lang.embeds.files, caller.lang.embeds.containsFiles.replace('%n', files.length.toString()).replace('%s', files.length > 1 ? 's' : ''));
 	const channelEmbed = new MessageEmbed()
-		.setAuthor(`${cmd.msg.author.username}${cmd.msg.author.discriminator == '0' ? '' : `#${cmd.msg.author.discriminator}`}`, cmd.msg.author.dynamicAvatarURL())
+		.setAuthor(`${cmd.msg.author.username}${cmd.msg.author.discriminator === '0' ? '' : `#${cmd.msg.author.discriminator}`}`, cmd.msg.author.dynamicAvatarURL())
 		.setColor(config.embeds.reply.color)
 		.setDescription(cmd.args.join(' ') || caller.lang.embeds.noContent)
 		.setTimestamp();

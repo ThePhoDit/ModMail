@@ -15,7 +15,7 @@ export default new Command('contact', async (caller, cmd, _log, config) => {
 	const openLog = await caller.db.getLog(user.id, 'USER');
 	if (!openLog) {
 		// Creates the channel on the main server.
-		const serverChannel = await caller.utils.discord.createChannel(process.env.MAIN_GUILD_ID!, `${user.username}${user.discriminator == '0' ? '' : `-${user.discriminator}`}`, 'GUILD_TEXT', {
+		const serverChannel = await caller.utils.discord.createChannel(process.env.MAIN_GUILD_ID!, `${user.username}${user.discriminator === '0' ? '' : `-${user.discriminator}`}`, 'GUILD_TEXT', {
 			parentID: config.mainCategoryID,
 			topic: user.id
 		});
@@ -43,13 +43,13 @@ export default new Command('contact', async (caller, cmd, _log, config) => {
 			recipient: {
 				id: user.id,
 				username: user.username,
-				discriminator: user.discriminator == '0' ? '' : user.discriminator,
+				discriminator: user.discriminator,
 				avatarURL: user.dynamicAvatarURL()
 			},
 			creator: {
 				id: cmd.msg.author.id,
 				username: cmd.msg.author.username,
-				discriminator: cmd.msg.author.discriminator == '0' ? '' : cmd.msg.author.discriminator,
+				discriminator: cmd.msg.author.discriminator,
 				avatarURL: cmd.msg.author.dynamicAvatarURL()
 			}
 		});

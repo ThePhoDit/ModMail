@@ -23,8 +23,8 @@ class DiscordUtils {
 	 * Send a message to a Discord channel or user.
 	 * @param {string} channel - The Channel/User ID.
 	 * @param {string} content - The content of the message.
-	 * @param {boolean} [user=false] - Whether the message is sent to an user or not (optional)
-	 * @param {MessageFile|MessageFile[]} [file] - Discord Message File to send (optional)
+	 * @param {boolean} [user=false] - Whether the message is sent to a user or not (optional)
+	 * @param {FileContent|FileContent[]} [file] - Discord Message File to send (optional)
 	 * @returns {Promise<Message|boolean>} - A Discord Message or false.
 	 */
 	async createMessage(channel: string, content: MessageContent, user = false, file?: FileContent | FileContent[]): Promise<Message | false> {
@@ -95,7 +95,7 @@ class DiscordUtils {
 	 * Get a message.
 	 * @param {string} channelID - The channel ID.
 	 * @param {string} messageID - The message ID.
-	 * @param {boolean} user - Whether is a DM or not
+	 * @param {boolean} [dm=false] - Whether is a DM or not (optional)
 	 * @returns {Promise<Message|boolean>} - A Discord Message or false.
 	 */
 	async fetchMessage(channelID: string, messageID: string, dm = false): Promise<Message | false> {
@@ -141,7 +141,7 @@ class DiscordUtils {
 				const user = this.caller.bot.users.get(p1);
 				if (!user)
 					return match;
-				return `@${user.username}#${user.discriminator}`;
+				return `@${user.username}${user.discriminator == '0' ? '' : `#${user.discriminator}`}`;
 			}))
 			.replace(/<#([0-9]+)>/g, ((match, p1): string => {
 				const channel = this.caller.bot.getChannel(p1);

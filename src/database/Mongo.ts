@@ -214,7 +214,7 @@ export default class Mongo implements IDatabase {
 				closer: {
 					id: msg!.author.id,
 					username: msg!.author.username,
-					discriminator: msg!.author.discriminator,
+					discriminator: msg!.author.discriminator == '0' ? '' : msg!.author.discriminator,
 					avatarURL: msg!.author.dynamicAvatarURL()
 				}
 			};
@@ -232,7 +232,7 @@ export default class Mongo implements IDatabase {
 			author: {
 				id: msg.author.id,
 				username: msg.author.username,
-				discriminator: msg.author.discriminator,
+				discriminator: msg.author.discriminator == '0' ? '' : msg.author.discriminator,
 				avatarURL: msg.author.dynamicAvatarURL()
 			},
 			content: content ? this.caller.utils.discord.formatMentions(content) : this.caller.utils.discord.formatMentions(msg.content),

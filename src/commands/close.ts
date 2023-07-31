@@ -16,7 +16,7 @@ export default new Command('close', async (caller, cmd, log, config) => {
 		const closerUpdated = await caller.db.updateLog(log!._id, 'closer', {
 			id: cmd.msg.author.id,
 			username: cmd.msg.author.username,
-			discriminator: cmd.msg.author.discriminator,
+			discriminator: cmd.msg.author.discriminator == '0' ? '' : cmd.msg.author.discriminator,
 			avatarURL: cmd.msg.author.dynamicAvatarURL()
 		});
 		if (!closerUpdated)

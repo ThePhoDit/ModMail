@@ -7,7 +7,7 @@
     "node": "16.x"
   },
   "dependencies": {
-    "axios": "^0.27.2",
+    "axios": "^1.6.0",
     "dotenv": "^16.0.1",
     "eris": "^0.17.1",
     "mongoose": "^6.6.5",
